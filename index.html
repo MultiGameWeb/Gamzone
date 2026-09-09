@@ -547,12 +547,13 @@
             position: relative;
             width: 100%;
             max-width: 360px;
-            aspect-ratio: 9/14;
+            aspect-ratio: 9 / 14;
             background: #040812;
             border: 2px solid var(--border-color);
             border-radius: var(--radius-md);
             overflow: hidden;
             box-shadow: var(--shadow);
+            touch-action: none;
         }
         canvas {
             display: block;
@@ -847,7 +848,7 @@
     <!-- ================= GAME 3: CONNECT NUMBERS SCREEN ================= -->
     <div id="screen-connect" class="screen">
         <div class="game-header">
-            <button class="btn-3d btn-home" onclick="connectGame.quit()">← Home</button>
+            <button class="btn-3d btn-home" onclick="app.goHome()">← Home</button>
             <div class="game-title-bar">🔢 Connect Numbers</div>
             <div class="hud-stats">Current: <span id="connect-target" style="color:var(--accent-cyan);">1</span></div>
         </div>
@@ -876,7 +877,7 @@
     <!-- ================= GAME 4: SUDOKU SCREEN ================= -->
     <div id="screen-sudoku" class="screen">
         <div class="game-header">
-            <button class="btn-3d btn-home" onclick="sudokuGame.quit()">← Home</button>
+            <button class="btn-3d btn-home" onclick="app.goHome()">← Home</button>
             <div class="game-title-bar">🧩 Sudoku 9×9</div>
             <div class="hud-stats">Errors: <span id="sudoku-mistakes" style="color:var(--danger);">0</span></div>
         </div>
@@ -1153,7 +1154,6 @@
                 btnEl.classList.add('wrong-feedback');
                 btnEl.innerHTML = `${selectedVal} ✕`;
 
-                // Highlight correct answer button in green
                 allButtons.forEach(b => {
                     if (Number(b.innerText) === this.currentAnswer) {
                         b.classList.add('correct-feedback');
@@ -1161,7 +1161,6 @@
                 });
             }
 
-            // Disable all buttons during feedback interval
             allButtons.forEach(b => b.style.pointerEvents = 'none');
 
             setTimeout(() => {
@@ -1190,7 +1189,7 @@
     };
 
 
-    /* ================= GAME 2: BALL & BRICKS (PRECISE COLLISION) ================= */
+    /* ================= GAME 2: BALL & BRICKS (FIXED ASPECT RATIO & SWEPT PADDLE COLLISION) ================= */
     const bricksGame = {
         canvas: null,
         ctx: null,
@@ -1199,11 +1198,14 @@
         level: 1,
         lives: 3,
         isGameOver: false,
-        paddle: { x: 130, y: 450, w: 100, h: 16 },
-        ball: { x: 180, y: 250, r: 7, speed: 4, dx: 2.5, dy: -3.5 },
+        paddle: { x: 130, y: 505, w: 100, h: 16 },
+        ball: { x: 180, y: 300, r: 7, speed: 4, dx: 2.5, dy: -3.5 },
         bricks: [],
         colors: ['#f43f5e', '#f59e0b', '#10b981', '#06b6d4', '#8b5cf6'],
-        handlePointerMove: null,
+        isDragging: false,
+        boundPointerDown: null,
+        boundPointerMove: null,
+        boundPointerUp: null,
 
         start() {
             document.getElementById('bricks-diff-view').style.display = 'none';
@@ -1212,8 +1214,9 @@
             this.canvas = document.getElementById('brickCanvas');
             this.ctx = this.canvas.getContext('2d');
             
+            // Exact logical matching 9:14 aspect ratio (360 x 560)
             this.canvas.width = 360;
-            this.canvas.height = 520;
+            this.canvas.height = 560;
 
             this.score = 0;
             this.level = 1;
@@ -1232,9 +1235,12 @@
                 cancelAnimationFrame(this.animId);
                 this.animId = null;
             }
-            if (this.handlePointerMove) {
-                window.removeEventListener('pointermove', this.handlePointerMove);
-                window.removeEventListener('touchmove', this.handlePointerMove);
+            const container = document.getElementById('brick-canvas-container');
+            if (container && this.boundPointerDown) {
+                container.removeEventListener('pointerdown', this.boundPointerDown);
+                window.removeEventListener('pointermove', this.boundPointerMove);
+                window.removeEventListener('pointerup', this.boundPointerUp);
+                window.removeEventListener('pointercancel', this.boundPointerUp);
             }
         },
 
@@ -1267,41 +1273,69 @@
                 }
             }
 
-            // Paddle width ~25% of game width, minimum safe touch size
-            this.paddle.w = Math.max(75, 100 - (this.level - 1) * 3);
+            // Paddle width start at 100px, minimum 78px
+            this.paddle.w = Math.max(78, 100 - (this.level - 1) * 3);
             this.paddle.x = (this.canvas.width - this.paddle.w) / 2;
-            this.paddle.y = this.canvas.height - 45;
+            this.paddle.y = this.canvas.height - 55;
 
             this.ball.speed = 4 + (this.level - 1) * 0.4;
+            this.resetBallAfterLifeLoss();
+        },
+
+        resetBallAfterLifeLoss() {
             this.ball.x = this.canvas.width / 2;
-            this.ball.y = this.paddle.y - 30;
+            this.ball.y = this.paddle.y - this.ball.r - 10;
             this.ball.dx = (Math.random() > 0.5 ? 1 : -1) * this.ball.speed * 0.7;
             this.ball.dy = -Math.abs(this.ball.speed * 0.7);
         },
 
+        loseLife() {
+            this.lives--;
+            if (this.lives <= 0) {
+                this.gameOver();
+            } else {
+                this.resetBallAfterLifeLoss();
+            }
+        },
+
         bindControls() {
             const container = document.getElementById('brick-canvas-container');
-            
-            this.handlePointerMove = (e) => {
+
+            const updatePaddleX = (clientX) => {
                 const rect = container.getBoundingClientRect();
-                const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : rect.left + rect.width / 2);
                 const rootX = clientX - rect.left;
                 const scaleX = this.canvas.width / rect.width;
                 let canvasX = rootX * scaleX;
-                
                 this.paddle.x = Math.max(0, Math.min(this.canvas.width - this.paddle.w, canvasX - this.paddle.w / 2));
             };
 
-            window.addEventListener('pointermove', this.handlePointerMove);
-            window.addEventListener('touchmove', this.handlePointerMove, { passive: true });
-            container.addEventListener('pointerdown', this.handlePointerMove);
+            this.boundPointerDown = (e) => {
+                this.isDragging = true;
+                updatePaddleX(e.clientX);
+                e.preventDefault();
+            };
+
+            this.boundPointerMove = (e) => {
+                if (!this.isDragging) return;
+                updatePaddleX(e.clientX);
+                e.preventDefault();
+            };
+
+            this.boundPointerUp = () => {
+                this.isDragging = false;
+            };
+
+            container.addEventListener('pointerdown', this.boundPointerDown);
+            window.addEventListener('pointermove', this.boundPointerMove, { passive: false });
+            window.addEventListener('pointerup', this.boundPointerUp);
+            window.addEventListener('pointercancel', this.boundPointerUp);
         },
 
         update() {
             if (this.isGameOver) return;
 
-            let prevX = this.ball.x;
-            let prevY = this.ball.y;
+            const prevX = this.ball.x;
+            const prevY = this.ball.y;
 
             // Move ball
             this.ball.x += this.ball.dx;
@@ -1322,44 +1356,34 @@
                 this.ball.dy = -this.ball.dy;
             }
 
-            // STRICT PADDLE COLLISION CHECK
-            // Condition: Moving downwards AND previous bottom was above or at paddle top,
-            // current bottom is past paddle top, and horizontal overlaps paddle box completely.
-            let paddleTop = this.paddle.y;
-            let paddleLeft = this.paddle.x;
-            let paddleRight = this.paddle.x + this.paddle.w;
-            let paddleBottom = this.paddle.y + this.paddle.h;
+            // SWEPT PADDLE COLLISION CHECK
+            if (this.ball.dy > 0) {
+                const paddleTop = this.paddle.y;
+                const paddleLeft = this.paddle.x;
+                const paddleRight = this.paddle.x + this.paddle.w;
 
-            let ballBottom = this.ball.y + this.ball.r;
-            let ballPrevBottom = prevY + this.ball.r;
+                const previousBottom = prevY + this.ball.r;
+                const currentBottom = this.ball.y + this.ball.r;
 
-            if (
-                this.ball.dy > 0 &&
-                ballPrevBottom <= paddleTop &&
-                ballBottom >= paddleTop &&
-                this.ball.x >= paddleLeft &&
-                this.ball.x <= paddleRight
-            ) {
-                this.ball.y = paddleTop - this.ball.r; // Snap to top
-                this.ball.dy = -Math.abs(this.ball.dy); // Bounce upward
+                const crossedPaddleTop = (previousBottom <= paddleTop && currentBottom >= paddleTop);
+                const ballLeft = this.ball.x - this.ball.r;
+                const ballRight = this.ball.x + this.ball.r;
+                const overlapsPaddle = (ballRight >= paddleLeft && ballLeft <= paddleRight);
 
-                // Add English spin relative to strike position
-                let hitOffset = (this.ball.x - (paddleLeft + this.paddle.w / 2)) / (this.paddle.w / 2);
-                this.ball.dx = hitOffset * this.ball.speed * 1.3;
+                if (crossedPaddleTop && overlapsPaddle) {
+                    this.ball.y = paddleTop - this.ball.r;
+                    this.ball.dy = -Math.abs(this.ball.dy);
+
+                    // Add spin relative to strike position
+                    let hitOffset = (this.ball.x - (paddleLeft + this.paddle.w / 2)) / (this.paddle.w / 2);
+                    this.ball.dx = hitOffset * this.ball.speed * 1.3;
+                }
             }
 
-            // Bottom out (Missed paddle completely)
+            // Ball miss / Life loss check
             if (this.ball.y - this.ball.r > this.canvas.height) {
-                this.lives--;
-                if (this.lives <= 0) {
-                    this.gameOver();
-                    return;
-                } else {
-                    this.ball.x = this.paddle.x + this.paddle.w / 2;
-                    this.ball.y = this.paddle.y - 25;
-                    this.ball.dx = (Math.random() > 0.5 ? 1 : -1) * this.ball.speed * 0.7;
-                    this.ball.dy = -Math.abs(this.ball.speed * 0.7);
-                }
+                this.loseLife();
+                if (this.isGameOver) return;
             }
 
             // Brick collisions
@@ -1457,7 +1481,7 @@
     };
 
 
-    /* ================= GAME 3: CONNECT NUMBERS (NO HINTS) ================= */
+    /* ================= GAME 3: CONNECT NUMBERS ================= */
     const connectGame = {
         difficulty: 'easy',
         maxNumber: 15,
