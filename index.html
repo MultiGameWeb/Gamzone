@@ -6,23 +6,33 @@
     <title>Brain Games - Train Your Brain & Reflexes</title>
     <style>
         :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-card: rgba(30, 41, 59, 0.7);
-            --bg-card-hover: rgba(51, 65, 85, 0.9);
-            --accent-primary: #6366f1;
-            --accent-secondary: #a855f7;
-            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --bg-primary: #070b19;
+            --bg-secondary: #0f172a;
+            --bg-card: rgba(15, 23, 42, 0.75);
+            --bg-card-hover: rgba(30, 41, 59, 0.85);
+            
+            /* New Cyan / Electric Blue / Teal 3D Button Palette */
+            --btn-base: #0284c7;
+            --btn-hover: #0369a1;
+            --btn-edge: #034f75;
+            --btn-text: #ffffff;
+
+            --accent-cyan: #06b6d4;
+            --accent-teal: #14b8a6;
+            --accent-blue: #3b82f6;
+            --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --success: #22c55e;
-            --danger: #ef4444;
+            --success: #10b981;
+            --danger: #f43f5e;
             --warning: #f59e0b;
-            --border-color: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(6, 182, 212, 0.2);
+            
             --radius-sm: 8px;
-            --radius-md: 16px;
-            --radius-lg: 24px;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
         }
 
         * {
@@ -51,22 +61,22 @@
         body::before {
             content: '';
             position: absolute;
-            top: -20vh;
-            left: -20vw;
-            width: 60vw;
-            height: 60vw;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            top: -15vh;
+            left: -15vw;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%);
             z-index: 0;
             pointer-events: none;
         }
         body::after {
             content: '';
             position: absolute;
-            bottom: -20vh;
-            right: -20vw;
-            width: 60vw;
-            height: 60vw;
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
+            bottom: -15vh;
+            right: -15vw;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
             z-index: 0;
             pointer-events: none;
         }
@@ -77,10 +87,10 @@
             display: flex;
             flex-direction: column;
             flex: 1;
-            max-width: 1200px;
+            max-width: 1100px;
             width: 100%;
             margin: 0 auto;
-            padding: 16px;
+            padding: 12px 16px;
         }
 
         /* Screen Management */
@@ -88,80 +98,123 @@
             display: none;
             flex-direction: column;
             flex: 1;
-            animation: fadeIn 0.3s ease-in-out;
+            animation: fadeIn 0.25s ease-in-out;
         }
         .screen.active {
             display: flex;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
+            from { opacity: 0; transform: translateY(4px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         /* Header / Hero Section */
         header {
             text-align: center;
-            padding: 24px 0 16px 0;
+            padding: 16px 0 12px 0;
         }
         .logo-area {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            margin-bottom: 8px;
+            gap: 10px;
+            margin-bottom: 6px;
         }
         .logo-icon {
-            font-size: 36px;
+            font-size: 30px;
             background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         h1 {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 800;
             letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #fff 30%, #94a3b8 100%);
+            background: linear-gradient(135deg, #fff 30%, var(--accent-cyan) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .tagline {
-            font-size: 15px;
-            color: var(--accent-secondary);
+            font-size: 14px;
+            color: var(--accent-cyan);
             font-weight: 600;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
         .subtitle {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
-            max-width: 400px;
-            margin: 0 auto 16px auto;
-            line-height: 1.4;
+            max-width: 380px;
+            margin: 0 auto 12px auto;
+            line-height: 1.3;
         }
+
+        /* ================= 3D BUTTON STYLING SYSTEM ================= */
+        .btn-3d {
+            background-color: #0284c7;
+            background-image: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #034f75, 0 6px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.08s ease;
+            position: relative;
+            top: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        }
+        .btn-3d:hover {
+            background-image: linear-gradient(180deg, #7dd3fc 0%, #0284c7 100%);
+        }
+        .btn-3d:active, .btn-3d.active {
+            top: 4px;
+            box-shadow: 0 0 0 #034f75, 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Variant 3D Buttons */
+        .btn-3d.teal {
+            background-color: #0d9488;
+            background-image: linear-gradient(180deg, #2dd4bf 0%, #0d9488 100%);
+            box-shadow: 0 4px 0 #115e59, 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        .btn-3d.teal:active { box-shadow: 0 0 0 #115e59, 0 2px 4px rgba(0, 0, 0, 0.3); }
+
+        .btn-3d.emerald {
+            background-color: #059669;
+            background-image: linear-gradient(180deg, #34d399 0%, #059669 100%);
+            box-shadow: 0 4px 0 #064e3b, 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        .btn-3d.emerald:active { box-shadow: 0 0 0 #064e3b, 0 2px 4px rgba(0, 0, 0, 0.3); }
+
+        .btn-3d.amber {
+            background-color: #d97706;
+            background-image: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
+            box-shadow: 0 4px 0 #92400e, 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        .btn-3d.amber:active { box-shadow: 0 0 0 #92400e, 0 2px 4px rgba(0, 0, 0, 0.3); }
+
+        .btn-3d.rose {
+            background-color: #e11d48;
+            background-image: linear-gradient(180deg, #fb7185 0%, #e11d48 100%);
+            box-shadow: 0 4px 0 #881337, 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        .btn-3d.rose:active { box-shadow: 0 0 0 #881337, 0 2px 4px rgba(0, 0, 0, 0.3); }
 
         /* Install App Button Bar */
         .install-bar {
             display: flex;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
         }
         .btn-install {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
             padding: 8px 16px;
-            border-radius: 20px;
             font-size: 13px;
-            font-weight: 600;
             display: none;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            transition: all 0.2s;
-        }
-        .btn-install:active {
-            transform: scale(0.95);
         }
 
         /* Game Grid Layout */
@@ -169,12 +222,12 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
         @media (min-width: 768px) {
             .game-grid {
                 grid-template-columns: repeat(3, 1fr);
-                gap: 20px;
+                gap: 16px;
             }
         }
 
@@ -182,32 +235,30 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
-            padding: 16px;
+            padding: 14px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(12px);
-            position: relative;
-            overflow: hidden;
             box-shadow: var(--shadow);
         }
         .game-card:hover {
             background: var(--bg-card-hover);
+            border-color: rgba(6, 182, 212, 0.5);
             transform: translateY(-2px);
-            border-color: rgba(99, 102, 241, 0.4);
         }
         .game-card-content {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            margin-bottom: 12px;
+            gap: 6px;
+            margin-bottom: 10px;
         }
         .game-card-icon {
-            font-size: 32px;
-            width: 54px;
-            height: 54px;
-            background: rgba(255, 255, 255, 0.05);
+            font-size: 28px;
+            width: 48px;
+            height: 48px;
+            background: rgba(6, 182, 212, 0.08);
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
@@ -215,86 +266,77 @@
             border: 1px solid var(--border-color);
         }
         .game-card h3 {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             color: var(--text-main);
         }
         .game-card p {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
             line-height: 1.3;
         }
         .skill-tag {
             align-self: flex-start;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            background: rgba(99, 102, 241, 0.15);
-            color: #818cf8;
-            padding: 3px 8px;
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--accent-cyan);
+            padding: 2px 6px;
             border-radius: 4px;
         }
         .btn-play {
-            background: var(--accent-gradient);
-            color: white;
-            border: none;
+            width: 100%;
             padding: 10px;
-            border-radius: var(--radius-sm);
-            font-weight: 700;
             font-size: 13px;
-            cursor: pointer;
-            text-align: center;
-            transition: opacity 0.2s;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-        .btn-play:active {
-            opacity: 0.8;
-            transform: scale(0.98);
         }
 
-        /* External Sections / Play More Games */
+        /* Compact Play More Games Section */
         .section-title {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             color: var(--text-muted);
         }
         .external-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
         .external-card {
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 14px;
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
             text-decoration: none;
             color: inherit;
             display: flex;
-            flex-direction: column;
-            gap: 8px;
+            align-items: center;
+            gap: 10px;
             transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
         .external-card:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(255, 255, 255, 0.2);
+            background: var(--bg-card-hover);
+            border-color: var(--accent-cyan);
         }
         .external-card span {
-            font-size: 20px;
+            font-size: 22px;
         }
-        .external-card h4 {
-            font-size: 14px;
+        .external-card-info h4 {
+            font-size: 12px;
             font-weight: 700;
+            color: var(--text-main);
         }
-        .external-card p {
-            font-size: 11px;
-            color: var(--text-muted);
+        .external-card-info p {
+            font-size: 10px;
+            color: var(--accent-cyan);
+            font-weight: 600;
         }
 
         /* Common Game Interface elements */
@@ -302,34 +344,26 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
             border-bottom: 1px solid var(--border-color);
         }
         .btn-home {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
             padding: 6px 12px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            font-size: 12px;
         }
         .game-title-bar {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             display: flex;
             align-items: center;
             gap: 6px;
+            color: var(--accent-cyan);
         }
         .hud-stats {
             display: flex;
-            gap: 12px;
-            font-size: 13px;
+            gap: 10px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--text-muted);
         }
@@ -344,32 +378,22 @@
             align-items: center;
             justify-content: center;
             flex: 1;
-            gap: 20px;
+            gap: 16px;
             text-align: center;
-            padding: 20px;
+            padding: 16px;
         }
         .difficulty-buttons {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             width: 100%;
-            max-width: 280px;
+            max-width: 260px;
         }
         .btn-diff {
-            padding: 14px;
-            border-radius: var(--radius-sm);
-            font-weight: 700;
-            font-size: 15px;
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: transform 0.1s;
+            padding: 12px;
+            font-size: 14px;
+            width: 100%;
         }
-        .btn-diff:active {
-            transform: scale(0.97);
-        }
-        .btn-diff.easy { background: rgba(34, 197, 94, 0.15); color: #4ade80; border-color: rgba(34, 197, 94, 0.3); }
-        .btn-diff.medium { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border-color: rgba(245, 158, 11, 0.3); }
-        .btn-diff.hard { background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.3); }
 
         /* Game Screens containers */
         .game-play-area {
@@ -385,7 +409,7 @@
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(7, 11, 25, 0.85);
             backdrop-filter: blur(8px);
             z-index: 100;
             display: none;
@@ -401,27 +425,29 @@
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
-            padding: 24px;
+            padding: 20px;
             width: 100%;
-            max-width: 360px;
+            max-width: 340px;
             text-align: center;
             box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
         }
         .modal-card h2 {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
+            color: var(--accent-cyan);
         }
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 8px;
             text-align: left;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
             border-radius: var(--radius-sm);
+            border: 1px solid rgba(255,255,255,0.05);
         }
         .stat-item {
             display: flex;
@@ -429,11 +455,11 @@
             gap: 2px;
         }
         .stat-label {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
         }
         .stat-value {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
         }
         .modal-actions {
@@ -442,15 +468,10 @@
             gap: 8px;
         }
         .btn-modal {
-            padding: 12px;
-            border-radius: var(--radius-sm);
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            border: none;
+            padding: 10px;
+            font-size: 13px;
+            width: 100%;
         }
-        .btn-primary { background: var(--accent-gradient); color: white; }
-        .btn-secondary { background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid var(--border-color); }
 
         /* ================= GAME 1: FLASH CALCULATION ================= */
         .flash-container {
@@ -458,10 +479,10 @@
             flex-direction: column;
             flex: 1;
             justify-content: space-between;
-            max-width: 400px;
+            max-width: 380px;
             margin: 0 auto;
             width: 100%;
-            padding-bottom: 20px;
+            padding-bottom: 16px;
         }
         .flash-progress-bar {
             width: 100%;
@@ -469,11 +490,11 @@
             background: rgba(255, 255, 255, 0.1);
             border-radius: 3px;
             overflow: hidden;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         .flash-progress-fill {
             height: 100%;
-            background: var(--accent-primary);
+            background: var(--accent-cyan);
             width: 100%;
             transition: width 0.2s linear;
         }
@@ -481,35 +502,23 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
-            padding: 30px 20px;
+            padding: 24px 16px;
             text-align: center;
-            font-size: 40px;
+            font-size: 36px;
             font-weight: 800;
             letter-spacing: 2px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             box-shadow: var(--shadow);
             color: #fff;
         }
         .flash-options {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
         }
         .flash-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 20px;
-            font-size: 24px;
-            font-weight: 700;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            transition: all 0.1s;
-        }
-        .flash-btn:active {
-            transform: scale(0.95);
-            background: var(--accent-primary);
-            border-color: var(--accent-primary);
+            padding: 16px;
+            font-size: 22px;
         }
 
         /* ================= GAME 2: BALL & BRICKS ================= */
@@ -520,14 +529,15 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            padding-bottom: 10px;
         }
         .canvas-container {
             position: relative;
             width: 100%;
-            max-width: 400px;
-            aspect-ratio: 3/4;
-            background: #090d16;
-            border: 1px solid var(--border-color);
+            max-width: 360px;
+            aspect-ratio: 9/14;
+            background: #040812;
+            border: 2px solid var(--border-color);
             border-radius: var(--radius-md);
             overflow: hidden;
             box-shadow: var(--shadow);
@@ -543,7 +553,7 @@
             display: flex;
             flex-direction: column;
             flex: 1;
-            max-width: 450px;
+            max-width: 400px;
             margin: 0 auto;
             width: 100%;
             position: relative;
@@ -554,15 +564,15 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             overflow: hidden;
             aspect-ratio: 1/1;
-            max-height: 450px;
+            max-height: 400px;
         }
         .connect-number-node {
             position: absolute;
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: var(--bg-secondary);
             border: 2px solid var(--border-color);
@@ -571,31 +581,27 @@
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
             transform: translate(-50%, -50%);
-            transition: transform 0.1s, background 0.2s, border-color 0.2s;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        .connect-number-node:active {
-            transform: translate(-50%, -50%) scale(0.9);
-        }
         .connect-number-node.cleared {
-            background: rgba(34, 197, 94, 0.2);
+            background: rgba(16, 185, 129, 0.2);
             border-color: var(--success);
-            color: #4ade80;
-            opacity: 0.5;
+            color: #34d399;
+            opacity: 0.4;
             pointer-events: none;
         }
         .connect-number-node.next-target {
-            border-color: var(--accent-primary);
-            background: rgba(99, 102, 241, 0.2);
+            border-color: var(--accent-cyan);
+            background: rgba(6, 182, 212, 0.25);
             animation: pulseNode 1.5s infinite;
         }
         @keyframes pulseNode {
-            0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.5); }
+            70% { box-shadow: 0 0 0 10px rgba(6, 182, 212, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
         }
 
         /* ================= GAME 4: SUDOKU ================= */
@@ -603,7 +609,7 @@
             display: flex;
             flex-direction: column;
             flex: 1;
-            max-width: 420px;
+            max-width: 380px;
             margin: 0 auto;
             width: 100%;
         }
@@ -613,34 +619,32 @@
             grid-template-rows: repeat(9, 1fr);
             aspect-ratio: 1/1;
             background: var(--bg-secondary);
-            border: 2px solid #475569;
+            border: 2px solid #334155;
             border-radius: var(--radius-sm);
             overflow: hidden;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         .sudoku-cell {
             background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.04);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             color: #cbd5e1;
             cursor: pointer;
-            transition: background 0.1s;
         }
-        /* Thick borders for 3x3 boxes */
-        .sudoku-cell:nth-child(3n) { border-right: 2px solid #475569; }
+        .sudoku-cell:nth-child(3n) { border-right: 2px solid #334155; }
         .sudoku-cell:nth-child(9n) { border-right: none; }
         .sudoku-cell:nth-of-type(n+19):nth-of-type(-n+27),
-        .sudoku-cell:nth-of-type(n+46):nth-of-type(-n+54) { border-bottom: 2px solid #475569; }
+        .sudoku-cell:nth-of-type(n+46):nth-of-type(-n+54) { border-bottom: 2px solid #334155; }
 
-        .sudoku-cell.selected { background: rgba(99, 102, 241, 0.3) !important; }
-        .sudoku-cell.highlighted { background: rgba(255, 255, 255, 0.06); }
+        .sudoku-cell.selected { background: rgba(6, 182, 212, 0.35) !important; }
+        .sudoku-cell.highlighted { background: rgba(255, 255, 255, 0.05); }
         .sudoku-cell.initial { color: #f8fafc; font-weight: 800; }
-        .sudoku-cell.user-input { color: #818cf8; }
-        .sudoku-cell.error { color: var(--danger) !important; background: rgba(239, 68, 68, 0.15) !important; }
+        .sudoku-cell.user-input { color: var(--accent-cyan); }
+        .sudoku-cell.error { color: var(--danger) !important; background: rgba(244, 63, 94, 0.2) !important; }
 
         .sudoku-keypad {
             display: grid;
@@ -649,32 +653,17 @@
             margin-bottom: 8px;
         }
         .sudoku-key {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 12px 0;
-            font-size: 16px;
-            font-weight: 700;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            text-align: center;
+            padding: 10px 0;
+            font-size: 15px;
         }
-        .sudoku-key:active { background: var(--accent-primary); }
         .sudoku-actions-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
         }
         .sudoku-action-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 10px;
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            text-align: center;
+            padding: 8px;
+            font-size: 11px;
         }
     </style>
 </head>
@@ -693,7 +682,7 @@
             <div class="subtitle">Quick games for calculation, focus, memory, reflexes and logic.</div>
             
             <div class="install-bar">
-                <button id="btn-install" class="btn-install">
+                <button id="btn-install" class="btn-3d teal btn-install">
                     <span>📲</span> Install App
                 </button>
             </div>
@@ -706,11 +695,11 @@
                     <div class="game-card-icon">⚡</div>
                     <div>
                         <h3>Flash Calculation</h3>
-                        <p>Solve calculations as fast as you can.</p>
+                        <p>Solve math calculations fast.</p>
                     </div>
                     <span class="skill-tag">Mental Math</span>
                 </div>
-                <button class="btn-play" onclick="app.openGame('flash')">PLAY</button>
+                <button class="btn-3d btn-play" onclick="app.openGame('flash')">PLAY</button>
             </div>
 
             <!-- Game 2 -->
@@ -719,11 +708,11 @@
                     <div class="game-card-icon">🏀</div>
                     <div>
                         <h3>Ball & Bricks</h3>
-                        <p>Move platform & keep ball alive.</p>
+                        <p>Keep ball alive & break bricks.</p>
                     </div>
                     <span class="skill-tag">Reflex + Coord</span>
                 </div>
-                <button class="btn-play" onclick="app.openGame('bricks')">PLAY</button>
+                <button class="btn-3d btn-play" onclick="app.openGame('bricks')">PLAY</button>
             </div>
 
             <!-- Game 3 -->
@@ -732,11 +721,11 @@
                     <div class="game-card-icon">🔢</div>
                     <div>
                         <h3>Connect Numbers</h3>
-                        <p>Connect numbers in correct order.</p>
+                        <p>Connect numbers ascending.</p>
                     </div>
                     <span class="skill-tag">Focus + Speed</span>
                 </div>
-                <button class="btn-play" onclick="app.openGame('connect')">PLAY</button>
+                <button class="btn-3d btn-play" onclick="app.openGame('connect')">PLAY</button>
             </div>
 
             <!-- Game 4 -->
@@ -745,11 +734,11 @@
                     <div class="game-card-icon">🧩</div>
                     <div>
                         <h3>Sudoku 9×9</h3>
-                        <p>Solve a fresh Sudoku puzzle every time.</p>
+                        <p>Solve fresh logic puzzle.</p>
                     </div>
                     <span class="skill-tag">Logic</span>
                 </div>
-                <button class="btn-play" onclick="app.openGame('sudoku')">PLAY</button>
+                <button class="btn-3d btn-play" onclick="app.openGame('sudoku')">PLAY</button>
             </div>
         </div>
 
@@ -757,16 +746,16 @@
         <div class="external-grid">
             <a href="https://multigameweb.github.io/Game-Zone/" target="_blank" rel="noopener noreferrer" class="external-card">
                 <span>🕹️</span>
-                <div>
+                <div class="external-card-info">
                     <h4>Game Zone</h4>
-                    <p>PLAY MORE GAMES</p>
+                    <p>PLAY MORE</p>
                 </div>
             </a>
             <a href="https://multigameweb.github.io/Pro-Chess/" target="_blank" rel="noopener noreferrer" class="external-card">
                 <span>♟️</span>
-                <div>
+                <div class="external-card-info">
                     <h4>Chess Pro</h4>
-                    <p>PLAY CHESS PRO</p>
+                    <p>PLAY CHESS</p>
                 </div>
             </a>
         </div>
@@ -776,7 +765,7 @@
     <!-- ================= GAME 1: FLASH CALCULATION SCREEN ================= -->
     <div id="screen-flash" class="screen">
         <div class="game-header">
-            <button class="btn-home" onclick="app.goHome()">← Home</button>
+            <button class="btn-3d btn-home" onclick="app.goHome()">← Home</button>
             <div class="game-title-bar">⚡ Flash Calculation</div>
             <div class="hud-stats">Score: <span id="flash-score">0</span></div>
         </div>
@@ -784,16 +773,16 @@
         <div id="flash-diff-view" class="difficulty-screen">
             <h3>Select Difficulty</h3>
             <div class="difficulty-buttons">
-                <button class="btn-diff easy" onclick="flashGame.start('easy')">Easy (60s)</button>
-                <button class="btn-diff medium" onclick="flashGame.start('medium')">Medium (60s)</button>
-                <button class="btn-diff hard" onclick="flashGame.start('hard')">Hard (60s)</button>
+                <button class="btn-3d emerald btn-diff" onclick="flashGame.start('easy')">Easy (60s)</button>
+                <button class="btn-3d amber btn-diff" onclick="flashGame.start('medium')">Medium (60s)</button>
+                <button class="btn-3d rose btn-diff" onclick="flashGame.start('hard')">Hard (60s)</button>
             </div>
         </div>
 
         <div id="flash-play-view" class="game-play-area">
             <div class="flash-container">
                 <div>
-                    <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--text-muted); margin-bottom:6px;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:6px;">
                         <span>Time: <strong id="flash-timer" style="color:#fff;">60</strong>s</span>
                         <span>Correct: <strong id="flash-correct" style="color:var(--success);">0</strong></span>
                     </div>
@@ -803,10 +792,10 @@
                     <div id="flash-question" class="flash-question-box">7 + 8</div>
                 </div>
                 <div class="flash-options" id="flash-options">
-                    <button class="flash-btn" onclick="flashGame.answer(0)">12</button>
-                    <button class="flash-btn" onclick="flashGame.answer(1)">15</button>
-                    <button class="flash-btn" onclick="flashGame.answer(2)">18</button>
-                    <button class="flash-btn" onclick="flashGame.answer(3)">14</button>
+                    <button class="btn-3d flash-btn" onclick="flashGame.answer(0)">12</button>
+                    <button class="btn-3d flash-btn" onclick="flashGame.answer(1)">15</button>
+                    <button class="btn-3d flash-btn" onclick="flashGame.answer(2)">18</button>
+                    <button class="btn-3d flash-btn" onclick="flashGame.answer(3)">14</button>
                 </div>
             </div>
         </div>
@@ -816,16 +805,16 @@
     <!-- ================= GAME 2: BALL & BRICKS SCREEN ================= -->
     <div id="screen-bricks" class="screen">
         <div class="game-header">
-            <button class="btn-home" onclick="bricksGame.quit()">← Home</button>
+            <button class="btn-3d btn-home" onclick="bricksGame.quit()">← Home</button>
             <div class="game-title-bar">🏀 Ball & Bricks</div>
             <div class="hud-stats">Lvl <span id="bricks-level">1</span> | Score <span id="bricks-score">0</span></div>
         </div>
 
         <div id="bricks-diff-view" class="difficulty-screen">
             <h3>Arcade Reflex Game</h3>
-            <p style="color:var(--text-muted); font-size:13px; max-width:260px;">Control the paddle by dragging your finger. Keep the ball alive and break all bricks!</p>
+            <p style="color:var(--text-muted); font-size:12px; max-width:260px;">Slide finger at the bottom to control the glowing platform. Keep the ball alive!</p>
             <div class="difficulty-buttons">
-                <button class="btn-diff medium" onclick="bricksGame.start()">Start Game</button>
+                <button class="btn-3d teal btn-diff" onclick="bricksGame.start()">Start Game</button>
             </div>
         </div>
 
@@ -842,23 +831,23 @@
     <!-- ================= GAME 3: CONNECT NUMBERS SCREEN ================= -->
     <div id="screen-connect" class="screen">
         <div class="game-header">
-            <button class="btn-home" onclick="connectGame.quit()">← Home</button>
+            <button class="btn-3d btn-home" onclick="connectGame.quit()">← Home</button>
             <div class="game-title-bar">🔢 Connect Numbers</div>
-            <div class="hud-stats">Find: <span id="connect-target" style="color:var(--accent-primary);">1</span></div>
+            <div class="hud-stats">Find: <span id="connect-target" style="color:var(--accent-cyan);">1</span></div>
         </div>
 
         <div id="connect-diff-view" class="difficulty-screen">
             <h3>Select Difficulty</h3>
             <div class="difficulty-buttons">
-                <button class="btn-diff easy" onclick="connectGame.start('easy')">Easy (1 - 15)</button>
-                <button class="btn-diff medium" onclick="connectGame.start('medium')">Medium (1 - 30)</button>
-                <button class="btn-diff hard" onclick="connectGame.start('hard')">Hard (1 - 50)</button>
+                <button class="btn-3d emerald btn-diff" onclick="connectGame.start('easy')">Easy (1 - 15)</button>
+                <button class="btn-3d amber btn-diff" onclick="connectGame.start('medium')">Medium (1 - 30)</button>
+                <button class="btn-3d rose btn-diff" onclick="connectGame.start('hard')">Hard (1 - 50)</button>
             </div>
         </div>
 
         <div id="connect-play-view" class="game-play-area">
             <div class="connect-container">
-                <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:6px;">
                     <span>Time: <strong id="connect-timer" style="color:#fff;">0.0</strong>s</span>
                     <span>Mistakes: <strong id="connect-mistakes" style="color:var(--danger);">0</strong></span>
                 </div>
@@ -871,7 +860,7 @@
     <!-- ================= GAME 4: SUDOKU SCREEN ================= -->
     <div id="screen-sudoku" class="screen">
         <div class="game-header">
-            <button class="btn-home" onclick="sudokuGame.quit()">← Home</button>
+            <button class="btn-3d btn-home" onclick="sudokuGame.quit()">← Home</button>
             <div class="game-title-bar">🧩 Sudoku 9×9</div>
             <div class="hud-stats">Errors: <span id="sudoku-mistakes" style="color:var(--danger);">0</span></div>
         </div>
@@ -879,35 +868,35 @@
         <div id="sudoku-diff-view" class="difficulty-screen">
             <h3>Select Difficulty</h3>
             <div class="difficulty-buttons">
-                <button class="btn-diff easy" onclick="sudokuGame.start('easy')">Easy</button>
-                <button class="btn-diff medium" onclick="sudokuGame.start('medium')">Medium</button>
-                <button class="btn-diff hard" onclick="sudokuGame.start('hard')">Hard</button>
+                <button class="btn-3d emerald btn-diff" onclick="sudokuGame.start('easy')">Easy</button>
+                <button class="btn-3d amber btn-diff" onclick="sudokuGame.start('medium')">Medium</button>
+                <button class="btn-3d rose btn-diff" onclick="sudokuGame.start('hard')">Hard</button>
             </div>
         </div>
 
         <div id="sudoku-play-view" class="game-play-area">
             <div class="sudoku-container">
-                <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:6px;">
                     <span>Time: <strong id="sudoku-timer" style="color:#fff;">00:00</strong></span>
-                    <span id="sudoku-diff-label" style="text-transform:capitalize; color:var(--accent-secondary);">Easy</span>
+                    <span id="sudoku-diff-label" style="text-transform:capitalize; color:var(--accent-cyan);">Easy</span>
                 </div>
                 <div id="sudoku-grid" class="sudoku-grid"></div>
                 <div class="sudoku-keypad">
-                    <button class="sudoku-key" onclick="sudokuGame.inputNumber(1)">1</button>
-                    <button class="sudoku-key" onclick="sudokuGame.inputNumber(2)">2</button>
-                    <button class="sudoku-key" onclick="sudokuGame.inputNumber(3)">3</button>
-                    <button class="sudoku-key" onclick="sudokuGame.inputNumber(4)">4</button>
-                    <button class="sudoku-key" onclick="sudokuGame.inputNumber(5)">5</button>
-                    <button class="sudoku-key" onclick="sudokuGame.inputNumber(6)">6</button>
-                    <button class="sudoku-key" onclick="sudokuGame.inputNumber(7)">7</button>
-                    <button class="sudoku-key" onclick="sudokuGame.inputNumber(8)">8</button>
-                    <button class="sudoku-key" onclick="sudokuGame.inputNumber(9)">9</button>
-                    <button class="sudoku-key" onclick="sudokuGame.inputNumber(0)" style="font-size:12px;">Erase</button>
+                    <button class="btn-3d sudoku-key" onclick="sudokuGame.inputNumber(1)">1</button>
+                    <button class="btn-3d sudoku-key" onclick="sudokuGame.inputNumber(2)">2</button>
+                    <button class="btn-3d sudoku-key" onclick="sudokuGame.inputNumber(3)">3</button>
+                    <button class="btn-3d sudoku-key" onclick="sudokuGame.inputNumber(4)">4</button>
+                    <button class="btn-3d sudoku-key" onclick="sudokuGame.inputNumber(5)">5</button>
+                    <button class="btn-3d sudoku-key" onclick="sudokuGame.inputNumber(6)">6</button>
+                    <button class="btn-3d sudoku-key" onclick="sudokuGame.inputNumber(7)">7</button>
+                    <button class="btn-3d sudoku-key" onclick="sudokuGame.inputNumber(8)">8</button>
+                    <button class="btn-3d sudoku-key" onclick="sudokuGame.inputNumber(9)">9</button>
+                    <button class="btn-3d sudoku-key teal" onclick="sudokuGame.inputNumber(0)" style="font-size:11px;">Erase</button>
                 </div>
                 <div class="sudoku-actions-row">
-                    <button class="sudoku-action-btn" onclick="sudokuGame.hint()">💡 Hint</button>
-                    <button class="sudoku-action-btn" onclick="sudokuGame.undo()">↩️ Undo</button>
-                    <button class="sudoku-action-btn" onclick="sudokuGame.newPuzzle()">🔄 New</button>
+                    <button class="btn-3d teal sudoku-action-btn" onclick="sudokuGame.hint()">💡 Hint</button>
+                    <button class="btn-3d amber sudoku-action-btn" onclick="sudokuGame.undo()">↩️ Undo</button>
+                    <button class="btn-3d rose sudoku-action-btn" onclick="sudokuGame.newPuzzle()">🔄 New</button>
                 </div>
             </div>
         </div>
@@ -919,12 +908,10 @@
 <div id="result-modal" class="modal-overlay">
     <div class="modal-card">
         <h2 id="modal-title">Time's Up!</h2>
-        <div class="stats-grid" id="modal-stats">
-            <!-- Dynamically injected stats -->
-        </div>
+        <div class="stats-grid" id="modal-stats"></div>
         <div class="modal-actions" id="modal-actions">
-            <button class="btn-modal btn-primary" onclick="app.closeModalAndRestart()">Play Again</button>
-            <button class="btn-modal btn-secondary" onclick="app.closeModalAndHome()">Back Home</button>
+            <button class="btn-3d teal btn-modal" onclick="app.closeModalAndRestart()">Play Again</button>
+            <button class="btn-3d btn-modal" onclick="app.closeModalAndHome()">Back Home</button>
         </div>
     </div>
 </div>
@@ -937,7 +924,7 @@
         deferredPrompt = e;
         const installBtn = document.getElementById('btn-install');
         if (installBtn) {
-            installBtn.style.display = 'flex';
+            installBtn.style.display = 'inline-flex';
             installBtn.onclick = async () => {
                 if (deferredPrompt) {
                     deferredPrompt.prompt();
@@ -960,7 +947,6 @@
             document.getElementById(`screen-${gameName}`).classList.add('active');
             this.currentScreen = gameName;
 
-            // Reset game view states
             if (gameName === 'flash') {
                 document.getElementById('flash-diff-view').style.display = 'flex';
                 document.getElementById('flash-play-view').style.display = 'none';
@@ -977,7 +963,6 @@
         },
 
         goHome() {
-            // Stop all active games cleanly
             flashGame.stop();
             bricksGame.stop();
             connectGame.stop();
@@ -1104,7 +1089,6 @@
                     this.currentAnswer = ans;
                     break;
                 }
-                // Safety valve if set gets too full
                 if (this.usedSignatures.size > 200) this.usedSignatures.clear();
             }
             return qText;
@@ -1114,7 +1098,6 @@
             const q = this.generateUniqueQuestion();
             document.getElementById('flash-question').innerText = q;
 
-            // Generate options
             let options = [this.currentAnswer];
             while (options.length < 4) {
                 let offset = (Math.floor(Math.random() * 10) + 1) * (Math.random() < 0.5 ? 1 : -1);
@@ -1123,13 +1106,12 @@
                     options.push(fake);
                 }
             }
-            // Shuffle
             options.sort(() => Math.random() - 0.5);
 
             const btnContainer = document.getElementById('flash-options');
             btnContainer.innerHTML = '';
             options.forEach(opt => {
-                btnContainer.innerHTML += `<button class="flash-btn" onclick="flashGame.answer(${opt})">${opt}</button>`;
+                btnContainer.innerHTML += `<button class="btn-3d flash-btn" onclick="flashGame.answer(${opt})">${opt}</button>`;
             });
         },
 
@@ -1164,7 +1146,7 @@
     };
 
 
-    /* ================= GAME 2: BALL & BRICKS ================= */
+    /* ================= GAME 2: BALL & BRICKS (REBUILT & FIXED) ================= */
     const bricksGame = {
         canvas: null,
         ctx: null,
@@ -1173,10 +1155,11 @@
         level: 1,
         lives: 3,
         isGameOver: false,
-        paddle: { x: 150, y: 520, w: 80, h: 14, dx: 0 },
-        ball: { x: 200, y: 300, r: 8, speed: 4, dx: 3, dy: -3 },
+        paddle: { x: 140, y: 440, w: 90, h: 16 },
+        ball: { x: 180, y: 250, r: 7, speed: 4, dx: 2.5, dy: -3.5 },
         bricks: [],
-        colors: ['#ef4444', '#f59e0b', '#22c55e', '#3b82f6', '#a855f7'],
+        colors: ['#f43f5e', '#f59e0b', '#10b981', '#06b6d4', '#8b5cf6'],
+        handlePointerMove: null,
 
         start() {
             document.getElementById('bricks-diff-view').style.display = 'none';
@@ -1185,9 +1168,9 @@
             this.canvas = document.getElementById('brickCanvas');
             this.ctx = this.canvas.getContext('2d');
             
-            // Set native dimensions for crisp canvas rendering
+            // Fixed internal coordinate system for reliable layout
             this.canvas.width = 360;
-            this.canvas.height = 480;
+            this.canvas.height = 520;
 
             this.score = 0;
             this.level = 1;
@@ -1206,7 +1189,10 @@
                 cancelAnimationFrame(this.animId);
                 this.animId = null;
             }
-            window.removeEventListener('pointermove', this.handlePointerMove);
+            if (this.handlePointerMove) {
+                window.removeEventListener('pointermove', this.handlePointerMove);
+                window.removeEventListener('pointertouch', this.handlePointerMove);
+            }
         },
 
         quit() {
@@ -1218,11 +1204,12 @@
             this.bricks = [];
             let rows = Math.min(3 + Math.floor(this.level / 2), 6);
             let cols = 6;
-            let brickWidth = 50;
-            let brickHeight = 18;
+            let brickWidth = 48;
+            let brickHeight = 16;
             let padding = 8;
-            let offsetTop = 40;
-            let offsetLeft = (this.canvas.width - (cols * (brickWidth + padding) - padding)) / 2;
+            let offsetTop = 45;
+            let totalWidth = cols * (brickWidth + padding) - padding;
+            let offsetLeft = (this.canvas.width - totalWidth) / 2;
 
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
@@ -1236,12 +1223,18 @@
                     });
                 }
             }
+
+            // Position paddle clearly near the bottom with safe margin
+            this.paddle.w = Math.max(60, 90 - (this.level - 1) * 3);
+            this.paddle.x = (this.canvas.width - this.paddle.w) / 2;
+            this.paddle.y = this.canvas.height - 45;
+
+            // Reset ball safely above paddle
+            this.ball.speed = 4 + (this.level - 1) * 0.4;
             this.ball.x = this.canvas.width / 2;
-            this.ball.y = this.canvas.height - 80;
-            this.ball.speed = 4 + (this.level - 1) * 0.5;
+            this.ball.y = this.paddle.y - 30;
             this.ball.dx = (Math.random() > 0.5 ? 1 : -1) * this.ball.speed * 0.7;
-            this.ball.dy = -this.ball.speed * 0.7;
-            this.paddle.w = Math.max(50, 80 - (this.level - 1) * 4);
+            this.ball.dy = -Math.abs(this.ball.speed * 0.7);
         },
 
         bindControls() {
@@ -1249,14 +1242,16 @@
             
             this.handlePointerMove = (e) => {
                 const rect = container.getBoundingClientRect();
-                const rootX = e.clientX - rect.left;
-                // scale to canvas internal coordinate space
+                const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : rect.left + rect.width / 2);
+                const rootX = clientX - rect.left;
                 const scaleX = this.canvas.width / rect.width;
-                const canvasX = rootX * scaleX;
+                let canvasX = rootX * scaleX;
+                
                 this.paddle.x = Math.max(0, Math.min(this.canvas.width - this.paddle.w, canvasX - this.paddle.w / 2));
             };
 
             window.addEventListener('pointermove', this.handlePointerMove);
+            window.addEventListener('touchmove', this.handlePointerMove, { passive: true });
             container.addEventListener('pointerdown', this.handlePointerMove);
         },
 
@@ -1267,36 +1262,49 @@
             this.ball.x += this.ball.dx;
             this.ball.y += this.ball.dy;
 
-            // Wall collisions
-            if (this.ball.x - this.ball.r < 0 || this.ball.x + this.ball.r > this.canvas.width) {
+            // Wall collisions (Left / Right)
+            if (this.ball.x - this.ball.r < 0) {
+                this.ball.x = this.ball.r;
+                this.ball.dx = -this.ball.dx;
+            } else if (this.ball.x + this.ball.r > this.canvas.width) {
+                this.ball.x = this.canvas.width - this.ball.r;
                 this.ball.dx = -this.ball.dx;
             }
+
+            // Wall collision (Top)
             if (this.ball.y - this.ball.r < 0) {
+                this.ball.y = this.ball.r;
                 this.ball.dy = -this.ball.dy;
             }
 
-            // Paddle collision
+            // Paddle Collision (Precise box check with anti-stick protection)
             if (
+                this.ball.dy > 0 &&
                 this.ball.y + this.ball.r >= this.paddle.y &&
                 this.ball.y - this.ball.r <= this.paddle.y + this.paddle.h &&
-                this.ball.x >= this.paddle.x &&
-                this.ball.x <= this.paddle.x + this.paddle.w
+                this.ball.x >= this.paddle.x - 4 &&
+                this.ball.x <= this.paddle.x + this.paddle.w + 4
             ) {
-                this.ball.dy = -Math.abs(this.ball.dy);
-                let hitPoint = (this.ball.x - (this.paddle.x + this.paddle.w / 2)) / (this.paddle.w / 2);
-                this.ball.dx = hitPoint * this.ball.speed;
+                this.ball.y = this.paddle.y - this.ball.r; // Prevent sinking
+                this.ball.dy = -Math.abs(this.ball.dy); // Bounce upward
+
+                // Add English spin based on where it hit the paddle
+                let hitOffset = (this.ball.x - (this.paddle.x + this.paddle.w / 2)) / (this.paddle.w / 2);
+                this.ball.dx = hitOffset * this.ball.speed * 1.2;
             }
 
-            // Bottom out (lose life)
-            if (this.ball.y + this.ball.r > this.canvas.height) {
+            // Bottom out (Missed paddle)
+            if (this.ball.y - this.ball.r > this.canvas.height) {
                 this.lives--;
                 if (this.lives <= 0) {
                     this.gameOver();
                     return;
                 } else {
-                    this.ball.x = this.canvas.width / 2;
-                    this.ball.y = this.canvas.height - 80;
-                    this.ball.dy = -Math.abs(this.ball.dy);
+                    // Reset ball position above paddle
+                    this.ball.x = this.paddle.x + this.paddle.w / 2;
+                    this.ball.y = this.paddle.y - 25;
+                    this.ball.dx = (Math.random() > 0.5 ? 1 : -1) * this.ball.speed * 0.7;
+                    this.ball.dy = -Math.abs(this.ball.speed * 0.7);
                 }
             }
 
@@ -1306,10 +1314,10 @@
                 if (b.status === 1) {
                     activeBricksCount++;
                     if (
-                        this.ball.x > b.x &&
-                        this.ball.x < b.x + b.w &&
-                        this.ball.y > b.y &&
-                        this.ball.y < b.y + b.h
+                        this.ball.x + this.ball.r > b.x &&
+                        this.ball.x - this.ball.r < b.x + b.w &&
+                        this.ball.y + this.ball.r > b.y &&
+                        this.ball.y - this.ball.r < b.y + b.h
                     ) {
                         this.ball.dy = -this.ball.dy;
                         b.status = 0;
@@ -1319,7 +1327,7 @@
                 }
             }
 
-            // Next level check
+            // Level complete
             if (activeBricksCount === 0) {
                 this.level++;
                 document.getElementById('bricks-level').innerText = this.level;
@@ -1330,31 +1338,47 @@
         draw() {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-            // Draw Bricks
+            // Draw Bricks with subtle highlight
             for (let b of this.bricks) {
                 if (b.status === 1) {
                     this.ctx.fillStyle = b.color;
                     this.ctx.beginPath();
                     this.ctx.roundRect(b.x, b.y, b.w, b.h, 4);
                     this.ctx.fill();
+
+                    // Brick top reflection highlight
+                    this.ctx.fillStyle = 'rgba(255,255,255,0.2)';
+                    this.ctx.fillRect(b.x + 2, b.y + 2, b.w - 4, 3);
                 }
             }
 
-            // Draw Paddle
-            this.ctx.fillStyle = '#6366f1';
+            // Draw 3D-styled movable Paddle Base
+            const pGrad = this.ctx.createLinearGradient(this.paddle.x, this.paddle.y, this.paddle.x, this.paddle.y + this.paddle.h);
+            pGrad.addColorStop(0, '#38bdf8');
+            pGrad.addColorStop(1, '#0284c7');
+            this.ctx.fillStyle = pGrad;
             this.ctx.beginPath();
-            this.ctx.roundRect(this.paddle.x, this.paddle.y, this.paddle.w, this.paddle.h, 6);
+            this.ctx.roundRect(this.paddle.x, this.paddle.y, this.paddle.w, this.paddle.h, 8);
             this.ctx.fill();
 
-            // Draw Ball
+            // Paddle bottom 3D lip
+            this.ctx.fillStyle = '#034f75';
+            this.ctx.beginPath();
+            this.ctx.roundRect(this.paddle.x, this.paddle.y + this.paddle.h - 4, this.paddle.w, 4, [0, 0, 8, 8]);
+            this.ctx.fill();
+
+            // Draw Ball with soft glow
+            this.ctx.shadowColor = '#06b6d4';
+            this.ctx.shadowBlur = 8;
             this.ctx.fillStyle = '#f8fafc';
             this.ctx.beginPath();
             this.ctx.arc(this.ball.x, this.ball.y, this.ball.r, 0, Math.PI * 2);
             this.ctx.fill();
+            this.ctx.shadowBlur = 0; // reset shadow for performance
 
-            // Draw Lives Indicator
+            // Draw Lives Indicator on Canvas Top
             this.ctx.fillStyle = '#94a3b8';
-            this.ctx.font = '12px sans-serif';
+            this.ctx.font = '11px sans-serif';
             this.ctx.fillText(`Lives: ${'❤️'.repeat(this.lives)}`, 10, 20);
         },
 
@@ -1443,7 +1467,7 @@
                     y = Math.random() * (height - 2 * padding) + padding;
                     for (let c of coords) {
                         let dist = Math.hypot(c.x - x, c.y - y);
-                        if (dist < 44) { overlap = true; break; }
+                        if (dist < 42) { overlap = true; break; }
                     }
                     attempts++;
                 } while (overlap && attempts < 100);
@@ -1472,7 +1496,6 @@
                     this.completeGame();
                 } else {
                     document.getElementById('connect-target').innerText = this.currentTarget;
-                    // Highlight next target node
                     const nodes = document.querySelectorAll('.connect-number-node');
                     nodes.forEach(n => {
                         if (Number(n.innerText) === this.currentTarget) {
@@ -1558,18 +1581,14 @@
         },
 
         generateFreshPuzzle() {
-            // Standard valid completed board baseline, then randomize
             let base = [
                 [5,3,4,6,7,8,9,1,2], [6,7,2,1,9,5,3,4,8], [1,9,8,3,4,2,5,6,7],
                 [8,5,9,7,6,1,4,2,3], [4,2,6,8,5,3,7,9,1], [7,1,3,9,2,4,8,5,6],
                 [9,6,1,5,3,7,2,8,4], [2,8,7,4,1,9,6,3,5], [3,4,5,2,8,6,1,7,9]
             ];
             this.solution = base;
-
-            // Clone to puzzle
             this.puzzle = base.map(row => [...row]);
 
-            // Remove cells based on difficulty
             let removeCount = this.difficulty === 'hard' ? 52 : this.difficulty === 'medium' ? 42 : 30;
             let removed = 0;
             while (removed < removeCount) {
@@ -1626,7 +1645,7 @@
             if (!this.selectedCell || this.isCompleted) return;
             let { r, c } = this.selectedCell;
 
-            if (this.puzzle[r][c] !== 0) return; // Cannot modify initial clues
+            if (this.puzzle[r][c] !== 0) return;
 
             let prevVal = this.board[r][c];
             if (prevVal === num) return;
@@ -1640,7 +1659,6 @@
                 return;
             }
 
-            // Check correctness against solution
             if (num === this.solution[r][c]) {
                 this.board[r][c] = num;
                 this.renderGrid();
@@ -1652,7 +1670,6 @@
                 this.board[r][c] = num;
                 this.renderGrid();
                 this.selectCell(r, c);
-                // highlight error temporarily
                 const cells = document.querySelectorAll('.sudoku-cell');
                 const cellEl = cells[r * 9 + c];
                 cellEl.classList.add('error');
@@ -1669,7 +1686,6 @@
 
         hint() {
             if (this.isCompleted) return;
-            // Find an empty or incorrect cell and fill correct value
             for (let r = 0; r < 9; r++) {
                 for (let c = 0; c < 9; c++) {
                     if (this.board[r][c] !== this.solution[r][c]) {
