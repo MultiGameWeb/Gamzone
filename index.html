@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Brain Games - Train Your Brain & Reflexes</title>
@@ -488,7 +491,211 @@
             width: 100%;
         }
 
-        /* ================= GAME 1: FLASH CALCULATION ================= */
+        const twofoldGame = {
+        board: Array(16).fill(0),
+        score: 0,
+        best: Number(localStorage.getItem('twofoldBest') || 0),
+        won: false,
+        gameOver: false,
+        running: false,
+        touchStartX: 0,
+        touchStartY: 0,
+        initialized: false,
+        animNew: new Set(),
+        animMerged: new Set(),
+
+        prepare() {
+            this.stop();
+            this.best = Number(localStorage.getItem('twofoldBest') || 0);
+            this.bindOnce();
+            this.newGame();
+        },
+
+        bindOnce() {
+            if (this.initialized) return;
+            const board = document.getElementById('twofold-board');
+            const newBtn = document.getElementById('twofold-new');
+            const overlayNew = document.getElementById('twofold-overlay-new');
+            const cont = document.getElementById('twofold-continue');
+            if (!board) return;
+            board.addEventListener('touchstart', (e) => {
+                if (!this.running || !e.touches.length) return;
+                this.touchStartX = e.touches[0].clientX;
+                this.touchStartY = e.touches[0].clientY;
+            }, {passive:true});
+            board.addEventListener('touchend', (e) => {
+                if (!this.running || !e.changedTouches.length) return;
+                const dx = e.changedTouches[0].clientX - this.touchStartX;
+                const dy = e.changedTouches[0].clientY - this.touchStartY;
+                if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+                if (Math.abs(dx) > Math.abs(dy)) this.move(dx > 0 ? 'right' : 'left');
+                else this.move(dy > 0 ? 'down' : 'up');
+                e.preventDefault();
+            }, {passive:false});
+            newBtn?.addEventListener('click', () => this.newGame());
+            overlayNew?.addEventListener('click', () => this.newGame());
+            cont?.addEventListener('click', () => { this.won = true; this.hideOverlay(); this.running = !this.gameOver; });
+            window.addEventListener('keydown', (e) => {
+                if (app.currentScreen !== 'twofold' || !this.running) return;
+                const map = {ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'};
+                const dir = map[e.key];
+                if (!dir) return;
+                e.preventDefault();
+                this.move(dir);
+            });
+            this.initialized = true;
+        },
+
+        newGame() {
+            this.board = Array(16).fill(0);
+            this.score = 0;
+            this.won = false;
+            this.gameOver = false;
+            this.running = true;
+            this.hideOverlay();
+            this.animNew = new Set();
+            this.animMerged = new Set();
+            this.spawnRandom();
+            this.animNew.add(this.board.findIndex(v => v === 2));
+            this.spawnRandom();
+            const firstFour = this.board.findIndex((v,i) => v === 4 && i !== [...this.animNew][0]);
+            if(firstFour >= 0) this.animNew.add(firstFour);
+            this.updateBest();
+            this.render(true);
+        },
+
+        stop() { this.running = false; },
+        quit() { this.stop(); app.goHome(); },
+
+        emptyIndexes() { const out=[]; this.board.forEach((v,i)=>{if(!v)out.push(i)}); return out; },
+        spawnRandom() {
+            const empty=this.emptyIndexes();
+            if(!empty.length) return false;
+            const idx=empty[Math.floor(Math.random()*empty.length)];
+            this.board[idx]=Math.random()<0.9?2:4;
+            return true;
+        },
+        updateBest() {
+            if(this.score>this.best){ this.best=this.score; localStorage.setItem('twofoldBest',String(this.best)); }
+            const s=document.getElementById('twofold-score'); if(s)s.textContent=this.score;
+            const b=document.getElementById('twofold-best'); if(b)b.textContent=this.best;
+            const hb=document.getElementById('twofold-header-best'); if(hb)hb.textContent=this.best;
+        },
+
+        slideLine(line) {
+            const vals=line.filter(Boolean);
+            const merged=[];
+            for(let i=0;i<vals.length;i++){
+                if(vals[i]===vals[i+1]){ const v=vals[i]*2; merged.push(v); this.score+=v; i++; }
+                else merged.push(vals[i]);
+            }
+            while(merged.length<4) merged.push(0);
+            return merged;
+        },
+
+        move(dir) {
+            if(!this.running || this.gameOver) return;
+            const old=this.board.slice();
+            const scoreBefore=this.score;
+            const next=Array(16).fill(0);
+            const lines=[];
+            for(let i=0;i<4;i++){
+                let line=[];
+                for(let j=0;j<4;j++){
+                    const idx = dir==='left' ? i*4+j : dir==='right' ? i*4+(3-j) : dir==='up' ? j*4+i : (3-j)*4+i;
+                    line.push(this.board[idx]);
+                }
+                lines.push(this.slideLine(line));
+            }
+            for(let i=0;i<4;i++) for(let j=0;j<4;j++){
+                const lineVal=lines[i][j];
+                const idx = dir==='left' ? i*4+j : dir==='right' ? i*4+(3-j) : dir==='up' ? j*4+i : (3-j)*4+i;
+                next[idx]=lineVal;
+            }
+            const changed=next.some((v,i)=>v!==old[i]);
+            if(!changed) return;
+            this.board=next;
+            this.animNew = new Set();
+            for(let i=0;i<16;i++) if(old[i]===0 && next[i]!==0) this.animNew.add(i);
+            const gained = this.score > scoreBefore;
+            this.animMerged = new Set();
+            if(gained){
+                for(let i=0;i<16;i++) if(next[i]>=4 && next[i]!==old[i]) this.animMerged.add(i);
+            }
+            const beforeSpawn = this.board.slice();
+            const emptyBeforeSpawn = beforeSpawn.map((v,i)=>v===0?i:-1).filter(i=>i>=0);
+            this.spawnRandom();
+            const spawned = this.board.findIndex((v,i)=>beforeSpawn[i]===0 && v!==0);
+            if(spawned>=0) this.animNew.add(spawned);
+            this.updateBest();
+            this.render(true);
+            if(!this.won && this.board.some(v=>v>=2048)){
+                this.won=true;
+                this.running=false;
+                this.showOverlay(true);
+                return;
+            }
+            if(!this.canMove()){
+                this.gameOver=true;
+                this.running=false;
+                this.showOverlay(false);
+            }
+        },
+
+        canMove(){
+            if(this.board.some(v=>!v)) return true;
+            for(let r=0;r<4;r++) for(let c=0;c<4;c++){
+                const i=r*4+c;
+                if(c<3 && this.board[i]===this.board[i+1]) return true;
+                if(r<3 && this.board[i]===this.board[i+4]) return true;
+            }
+            return false;
+        },
+
+        tileClass(v){ if(v<=0)return ''; if(v<=2048)return 'twofold-v'+v; return 'twofold-vbig'; },
+        render(animate=false){
+            const board=document.getElementById('twofold-board'); if(!board)return;
+            board.innerHTML='';
+            this.board.forEach((v,i)=>{
+                const cell=document.createElement('div');
+                let cls='twofold-cell '+this.tileClass(v);
+                if(animate && this.animNew.has(i)) cls += ' new';
+                if(animate && this.animMerged.has(i)) cls += ' merged';
+                cell.className=cls;
+                cell.setAttribute('role','gridcell');
+                cell.setAttribute('aria-label',v?String(v):'empty');
+                if(v){ const span=document.createElement('span'); span.textContent=v; cell.appendChild(span); }
+                board.appendChild(cell);
+            });
+            if(animate){
+                setTimeout(()=>{ this.animNew.clear(); this.animMerged.clear(); }, 220);
+            }
+        },
+        showOverlay(won){
+            const ov=document.getElementById('twofold-overlay');
+            const title=document.getElementById('twofold-overlay-title');
+            const text=document.getElementById('twofold-overlay-text');
+            const cont=document.getElementById('twofold-continue');
+            const actions=document.getElementById('twofold-overlay-actions');
+            if(!ov)return;
+            ov.classList.add('active');
+            if(won){
+                title.textContent='You reached 2048!';
+                text.textContent='Nice! Keep playing to build an even bigger tile, or start a fresh board.';
+                cont.style.display='inline-flex';
+                actions.classList.remove('one');
+            }else{
+                title.textContent='No moves left';
+                text.textContent=`Final score: ${this.score}. Start a new game and try again.`;
+                cont.style.display='none';
+                actions.classList.add('one');
+            }
+        },
+        hideOverlay(){ document.getElementById('twofold-overlay')?.classList.remove('active'); }
+    };
+
+
+    /* ================= GAME 1: FLASH CALCULATION ================= */
         .flash-container {
             display: flex;
             flex-direction: column;
@@ -767,7 +974,9 @@
             transform: scale(1.04);
         }
     
-        /* ================= GAME 7: BURROW BASH ================= */
+        /* ================= GAME 9: TWOFOLD 2048 ================= */
+
+    /* ================= GAME 7: BURROW BASH ================= */
         .burrow-screen{font-family:'Nunito',sans-serif;}
         .burrow-wrap{width:100%;max-width:520px;margin:0 auto;padding:4px 0 18px;}
         .burrow-heading{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:clamp(30px,7vw,42px);margin:0;color:#dff6df;text-align:center;letter-spacing:.4px;}
@@ -824,6 +1033,64 @@
             .car-controls .car-control:nth-child(4) { grid-column:auto; }
             .car-landscape-note { display:block; text-align:center; font-size:10px; color:var(--text-muted); margin-top:5px; }
         }
+    /* ================= GAME 9: TWOFOLD 2048 ================= */
+    .twofold-screen { overflow: hidden; }
+    .twofold-wrap { width:min(480px,100%); margin:0 auto; padding:4px 0 18px; }
+    .twofold-top { display:flex; align-items:flex-end; justify-content:space-between; gap:10px; margin-bottom:12px; }
+    .twofold-brand h2 { font-family:'Space Grotesk',sans-serif; font-size:30px; line-height:1; letter-spacing:-1px; }
+    .twofold-brand p { font-family:'Manrope',sans-serif; color:#8fa3bf; font-size:11px; margin-top:6px; }
+    .twofold-scores { display:flex; gap:7px; }
+    .twofold-scorebox { min-width:72px; padding:7px 9px; text-align:center; border:1px solid rgba(45,212,191,.22); background:rgba(15,23,42,.9); border-radius:10px; }
+    .twofold-scorebox .label { display:block; font:700 9px/1 'Manrope',sans-serif; color:#8fa3bf; letter-spacing:1px; }
+    .twofold-scorebox strong { display:block; font:800 19px/1.2 'Space Grotesk',sans-serif; color:#eaffff; }
+    .twofold-new { width:100%; padding:10px 14px; margin:0 0 10px; font-size:13px; }
+    .twofold-board-shell { position:relative; padding:10px; background:linear-gradient(145deg,#101a3a,#0b1330); border:1px solid rgba(45,212,191,.22); border-radius:18px; box-shadow:0 18px 40px rgba(0,0,0,.32); }
+    .twofold-board { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; aspect-ratio:1; background:#080e25; padding:9px; border-radius:12px; }
+    .twofold-cell { position:relative; display:grid; place-items:center; border-radius:10px; background:#111a3a; color:rgba(236,255,252,.12); font-family:'Space Grotesk',sans-serif; font-weight:800; font-size:clamp(22px,8vw,38px); box-shadow:inset 0 0 0 1px rgba(255,255,255,.025); }
+    .twofold-cell span { position:relative; z-index:1; }
+    .twofold-cell.new::after { content:''; position:absolute; inset:12%; border-radius:9px; animation:twofoldPop .18s ease-out; }
+    .twofold-cell.merged { animation:twofoldMerge .18s ease-out; }
+    @keyframes twofoldPop { from{transform:scale(.45);opacity:.2} to{transform:scale(1);opacity:1} }
+    @keyframes twofoldMerge { 50%{transform:scale(1.12)} }
+    .twofold-v2{background:#163b52;color:#d9fffb}.twofold-v4{background:#155e66;color:#e8fffd}.twofold-v8{background:#147d73;color:#ecfffb}.twofold-v16{background:#15947d;color:#f2fffb}.twofold-v32{background:#1ca77e;color:#f3fffb}.twofold-v64{background:#28bb77;color:#061d18}.twofold-v128{background:#66c75d;color:#06180f}.twofold-v256{background:#a4cf49;color:#12200a}.twofold-v512{background:#d7cf43;color:#1b2107}.twofold-v1024{background:#f0ae39;color:#241500}.twofold-v2048{background:#ff7d45;color:#230b02}.twofold-v4096,.twofold-v8192,.twofold-vbig{background:#ec5b71;color:#fff4f5;box-shadow:0 0 18px rgba(236,91,113,.35)}
+    .twofold-help { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:10px; padding:8px 10px; border:1px solid rgba(45,212,191,.12); border-radius:10px; color:#8fa3bf; font:600 10px/1.4 'Manrope',sans-serif; background:rgba(15,23,42,.55); }
+    .twofold-focus { outline:2px solid #2dd4bf; outline-offset:3px; }
+    .twofold-overlay { position:absolute; inset:0; display:none; align-items:center; justify-content:center; border-radius:18px; background:rgba(6,10,28,.78); backdrop-filter:blur(6px); z-index:5; padding:18px; }
+    .twofold-overlay.active { display:flex; animation:fadeIn .18s ease-out; }
+    .twofold-overlay-card { width:min(330px,92%); text-align:center; padding:20px; border-radius:16px; background:#0e1732; border:1px solid rgba(45,212,191,.24); box-shadow:0 18px 40px rgba(0,0,0,.4); }
+    .twofold-overlay-card h3 { font:800 25px/1 'Space Grotesk',sans-serif; color:#dffffa; margin-bottom:8px; }
+    .twofold-overlay-card p { font:600 12px/1.5 'Manrope',sans-serif; color:#9aadc7; margin-bottom:14px; }
+    .twofold-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .twofold-actions.one { grid-template-columns:1fr; }
+    @media(max-width:420px){ .twofold-brand h2{font-size:27px}.twofold-scorebox{min-width:66px}.twofold-board{gap:7px;padding:7px}.twofold-board-shell{padding:8px}.twofold-cell{border-radius:8px} }
+    @media(prefers-reduced-motion:reduce){ .twofold-cell.new::after,.twofold-cell.merged{animation:none} }
+
+    
+
+        /* ================= GAME 10: SKYBOUND FLUTTER ================= */
+        .flappy-screen{overflow:hidden;}
+        .flappy-wrap{width:100%;max-width:520px;margin:0 auto;display:flex;flex-direction:column;flex:1;min-height:0;padding:2px 0 14px;}
+        .flappy-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;}
+        .flappy-brand h2{font-size:27px;line-height:1;letter-spacing:-.7px;color:#dffaff;}
+        .flappy-brand p{font-size:10px;color:#8fb8c8;margin-top:5px;}
+        .flappy-stats{display:flex;gap:7px;}
+        .flappy-stat{min-width:66px;text-align:center;padding:6px 8px;border:1px solid rgba(103,232,249,.22);background:rgba(10,30,52,.84);border-radius:10px;}
+        .flappy-stat small{display:block;font-size:8px;letter-spacing:1px;color:#7fa7b8;font-weight:800;}
+        .flappy-stat strong{display:block;font-size:18px;line-height:1.15;color:#ecfeff;}
+        .flappy-stage{position:relative;width:100%;flex:1;min-height:430px;border-radius:18px;overflow:hidden;border:1px solid rgba(103,232,249,.25);background:#08233a;box-shadow:0 16px 38px rgba(0,0,0,.32);touch-action:none;}
+        #flappyCanvas{display:block;width:100%;height:100%;touch-action:none;}
+        .flappy-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(rgba(4,18,32,.35),rgba(4,18,32,.72));padding:18px;}
+        .flappy-overlay.hidden{display:none;}
+        .flappy-card{width:min(340px,90%);padding:20px;border-radius:18px;background:rgba(5,20,35,.92);border:1px solid rgba(103,232,249,.28);box-shadow:0 18px 40px rgba(0,0,0,.38);text-align:center;backdrop-filter:blur(8px);}
+        .flappy-card h2{font-size:28px;color:#dffaff;margin-bottom:7px;}
+        .flappy-card p{font-size:12px;line-height:1.55;color:#9bc2cf;margin-bottom:14px;}
+        .flappy-card .flappy-result{font-size:13px;font-weight:800;color:#d7fbff;margin:8px 0 14px;}
+        .flappy-hint{text-align:center;font-size:10px;color:#7da5b5;margin-top:7px;}
+        .flappy-start{padding:11px 22px;font-size:13px;min-width:150px;}
+        @media(max-width:560px){.flappy-stage{min-height:390px}.flappy-brand h2{font-size:24px}.flappy-stat{min-width:60px}}
+        @media(max-height:520px) and (orientation:landscape){.flappy-stage{min-height:250px}.flappy-hint{margin-top:4px}}
+        @media(prefers-reduced-motion:reduce){.flappy-stage{scroll-behavior:auto}}
+
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
@@ -951,6 +1218,32 @@
                 </div>
                 <button class="btn-3d btn-play" onclick="app.openGame('car')">PLAY</button>
             </div>
+
+            <!-- Game 9 (NEW) -->
+            <div class="game-card">
+                <div class="game-card-content">
+                    <div class="game-card-icon">🔢</div>
+                    <div>
+                        <h3>Twofold</h3>
+                        <p>Merge matching tiles and reach 2048.</p>
+                    </div>
+                    <span class="skill-tag">Strategy + Logic</span>
+                </div>
+                <button class="btn-3d btn-play" onclick="app.openGame('twofold')">PLAY</button>
+            </div>
+            <!-- Game 10 (NEW) -->
+            <div class="game-card">
+                <div class="game-card-content">
+                    <div class="game-card-icon">🐦</div>
+                    <div>
+                        <h3>Skybound Flutter</h3>
+                        <p>Flap through the cloud gates.</p>
+                    </div>
+                    <span class="skill-tag">Reflex + Timing</span>
+                </div>
+                <button class="btn-3d btn-play" onclick="app.openGame('flappy')">PLAY</button>
+            </div>
+
         </div>
 
         <div class="section-title">🎮 Play More Games</div>
@@ -1244,6 +1537,76 @@
         </div>
     </div>
 
+    <!-- ================= GAME 9: TWOFOLD 2048 SCREEN ================= -->
+    <div id="screen-twofold" class="screen twofold-screen">
+        <div class="game-header">
+            <button class="btn-3d btn-home" onclick="twofoldGame.quit()">← Home</button>
+            <div class="game-title-bar">🔢 Twofold</div>
+            <div class="hud-stats">Best <span id="twofold-header-best">0</span></div>
+        </div>
+        <div class="twofold-wrap">
+            <div class="twofold-top">
+                <div class="twofold-brand">
+                    <h2>Twofold</h2>
+                    <p>Merge matching numbers. Reach 2048.</p>
+                </div>
+                <div class="twofold-scores">
+                    <div class="twofold-scorebox"><span class="label">SCORE</span><strong id="twofold-score">0</strong></div>
+                    <div class="twofold-scorebox"><span class="label">BEST</span><strong id="twofold-best">0</strong></div>
+                </div>
+            </div>
+            <button id="twofold-new" class="btn-3d teal twofold-new">New game</button>
+            <div class="twofold-board-shell">
+                <div id="twofold-board" class="twofold-board" role="grid" aria-label="Twofold 2048 board"></div>
+                <div id="twofold-overlay" class="twofold-overlay" aria-live="polite">
+                    <div class="twofold-overlay-card">
+                        <h3 id="twofold-overlay-title">You reached 2048!</h3>
+                        <p id="twofold-overlay-text">Great work. Keep playing to chase an even higher tile.</p>
+                        <div id="twofold-overlay-actions" class="twofold-actions">
+                            <button id="twofold-continue" class="btn-3d teal btn-modal">Keep playing</button>
+                            <button id="twofold-overlay-new" class="btn-3d btn-modal">New game</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="twofold-help"><span>Swipe or use ↑ ↓ ← →</span><span>Each move adds a 2 or 4</span></div>
+        </div>
+    </div>
+
+
+    <!-- ================= GAME 10: SKYBOUND FLUTTER SCREEN ================= -->
+    <div id="screen-flappy" class="screen flappy-screen">
+        <div class="game-header">
+            <button class="btn-3d btn-home" onclick="flappyGame.quit()">← Home</button>
+            <div class="game-title-bar">🐦 Skybound Flutter</div>
+            <div class="hud-stats">Best <span id="flappy-header-best">0</span></div>
+        </div>
+        <div class="flappy-wrap">
+            <div class="flappy-top">
+                <div class="flappy-brand">
+                    <h2>Skybound Flutter</h2>
+                    <p>Tap or press Space to flap through the cloud gates.</p>
+                </div>
+                <div class="flappy-stats">
+                    <div class="flappy-stat"><small>SCORE</small><strong id="flappy-score">0</strong></div>
+                    <div class="flappy-stat"><small>BEST</small><strong id="flappy-best">0</strong></div>
+                </div>
+            </div>
+            <div class="flappy-stage" id="flappy-stage">
+                <canvas id="flappyCanvas" aria-label="Skybound Flutter game"></canvas>
+                <div id="flappy-overlay" class="flappy-overlay">
+                    <div class="flappy-card">
+                        <h2 id="flappy-overlay-title">Skybound Flutter</h2>
+                        <p id="flappy-overlay-text">Tap the sky or press Space to flap. Pass the cloud gates without touching them, the ground, or the ceiling.</p>
+                        <div id="flappy-result" class="flappy-result"></div>
+                        <button id="flappy-play-btn" class="btn-3d teal flappy-start">Start Game</button>
+                    </div>
+                </div>
+            </div>
+            <div class="flappy-hint">Tap / Click / Spacebar • Fly between the cloud gates</div>
+        </div>
+    </div>
+
 <!-- Generic Result Modal -->
 <div id="result-modal" class="modal-overlay">
     <div class="modal-card">
@@ -1289,6 +1652,8 @@
 
             if (gameName === 'burrow') burrowGame.prepare();
             if (gameName === 'car') carGame.prepare();
+            if (gameName === 'twofold') twofoldGame.prepare();
+            if (gameName === 'flappy') flappyGame.prepare();
 
             if (gameName === 'flash') {
                 document.getElementById('flash-diff-view').style.display = 'flex';
@@ -1320,6 +1685,8 @@
             patternGame.stop();
             burrowGame.stop();
             carGame.stop();
+            twofoldGame.stop();
+            flappyGame.stop();
 
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('screen-home').classList.add('active');
@@ -2876,6 +3243,186 @@
         }
     };
     document.getElementById('burrow-play-btn')?.addEventListener('click',()=>burrowGame.start());
+
+
+    /* ================= GAME 10: SKYBOUND FLUTTER ================= */
+    const flappyGame = {
+        canvas: null, ctx: null, stage: null, initialized: false, running: false,
+        raf: 0, lastTime: 0, spawnTimer: 0, score: 0,
+        best: Number(localStorage.getItem('skyboundFlutterBest') || 0),
+        width: 0, height: 0, dpr: 1,
+        player: { x: 0, y: 0, vy: 0, r: 16, rotation: 0 },
+        pipes: [], clouds: [], stars: [],
+        cfg: { gravity: 1050, flap: -345, speed: 190, pipeGap: 150, pipeWidth: 62, spawnEvery: 1.55 },
+        bgTime: 0, gameStarted: false,
+
+        prepare() {
+            this.stop();
+            this.best = Number(localStorage.getItem('skyboundFlutterBest') || 0);
+            if (!this.initialized) this.init();
+            this.resize();
+            this.resetScene();
+            this.showStartOverlay();
+        },
+        init() {
+            this.canvas = document.getElementById('flappyCanvas');
+            this.stage = document.getElementById('flappy-stage');
+            if (!this.canvas || !this.stage) return;
+            this.ctx = this.canvas.getContext('2d');
+            this.stage.addEventListener('pointerdown', (e) => {
+                if (e.pointerType === 'mouse' && e.button !== 0) return;
+                e.preventDefault();
+                if (!this.running) this.start(); else this.flap();
+            }, {passive:false});
+            window.addEventListener('keydown', (e) => {
+                if (app.currentScreen !== 'flappy') return;
+                if (e.code === 'Space' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (!this.running) {
+                        const overlay = document.getElementById('flappy-overlay');
+                        if (overlay && !overlay.classList.contains('hidden')) this.start();
+                    } else this.flap();
+                }
+            });
+            document.getElementById('flappy-play-btn')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.start();
+            });
+            window.addEventListener('resize', () => { if (app.currentScreen === 'flappy') this.resize(); });
+            this.initialized = true;
+        },
+        resize() {
+            if (!this.canvas || !this.stage) return;
+            const r = this.stage.getBoundingClientRect();
+            this.width = Math.max(320, Math.floor(r.width));
+            this.height = Math.max(250, Math.floor(r.height));
+            this.dpr = Math.min(2, window.devicePixelRatio || 1);
+            this.canvas.width = Math.floor(this.width * this.dpr);
+            this.canvas.height = Math.floor(this.height * this.dpr);
+            this.canvas.style.width = this.width + 'px';
+            this.canvas.style.height = this.height + 'px';
+            this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);
+            this.player.r = Math.max(14, Math.min(19, this.width * .035));
+            this.seedParallax();
+            this.draw();
+        },
+        seedParallax() {
+            this.clouds = Array.from({length:7}, (_,i)=>({x:(i/7)*this.width+Math.random()*100,y:40+Math.random()*this.height*.55,s:0.35+Math.random()*.45,w:55+Math.random()*90,h:18+Math.random()*25}));
+            this.stars = Array.from({length:18}, (_,i)=>({x:Math.random()*this.width,y:Math.random()*this.height*.7,r:0.6+Math.random()*1.4,p:0.15+Math.random()*.3}));
+        },
+        resetScene() {
+            this.score=0; this.pipes=[]; this.spawnTimer=0; this.bgTime=0; this.gameStarted=false;
+            this.running=false; this.player.x=this.width*.28; this.player.y=this.height*.46; this.player.vy=0; this.player.rotation=0;
+            this.updateUI(); this.draw();
+        },
+        start() {
+            this.stop(); this.resetScene(); this.running=true; this.gameStarted=true;
+            this.hideOverlay(); this.flap(); this.lastTime=performance.now();
+            this.raf=requestAnimationFrame((t)=>this.loop(t));
+        },
+        flap() {
+            this.player.vy=this.cfg.flap;
+            this.player.rotation=-0.34;
+        },
+        spawnPipe() {
+            const margin=68;
+            const gap=this.cfg.pipeGap;
+            const center=margin + Math.random()*(this.height - margin*2);
+            const topH=Math.max(32, center-gap/2);
+            const bottomY=center+gap/2;
+            this.pipes.push({x:this.width+20,topH,bottomY,scored:false});
+        },
+        loop(now) {
+            if (!this.running) return;
+            const dt=Math.min(0.032, Math.max(0.001,(now-this.lastTime)/1000));
+            this.lastTime=now; this.bgTime+=dt;
+            this.spawnTimer+=dt;
+            if(this.spawnTimer>=this.cfg.spawnEvery){this.spawnTimer-=this.cfg.spawnEvery;this.spawnPipe();}
+            this.update(dt); this.draw();
+            this.raf=requestAnimationFrame((t)=>this.loop(t));
+        },
+        update(dt) {
+            this.player.vy+=this.cfg.gravity*dt;
+            this.player.y+=this.player.vy*dt;
+            const targetRot=Math.max(-0.45,Math.min(1.05,this.player.vy/420));
+            this.player.rotation += (targetRot-this.player.rotation)*Math.min(1,dt*8);
+            for(const p of this.pipes){
+                p.x-=this.cfg.speed*dt;
+                if(!p.scored && p.x+this.cfg.pipeWidth<this.player.x){p.scored=true;this.score++;this.updateUI();}
+            }
+            this.pipes=this.pipes.filter(p=>p.x+this.cfg.pipeWidth>-30);
+            for(const c of this.clouds){c.x-=this.cfg.speed*.10*c.s*dt;if(c.x+c.w<0)c.x=this.width+30;}
+            for(const s of this.stars){s.x-=this.cfg.speed*.03*s.p*dt;if(s.x<0)s.x=this.width;}
+            if(this.collides()) this.endGame();
+        },
+        collides() {
+            const p=this.player;
+            if(p.y-p.r<=0 || p.y+p.r>=this.height) return true;
+            for(const o of this.pipes){
+                const hitX=p.x+p.r>o.x && p.x-p.r<o.x+this.cfg.pipeWidth;
+                if(!hitX) continue;
+                const hitTop=p.y-p.r<o.topH;
+                const hitBottom=p.y+p.r>o.bottomY;
+                if(hitTop||hitBottom) return true;
+            }
+            return false;
+        },
+        endGame() {
+            if(!this.running) return;
+            this.running=false;
+            cancelAnimationFrame(this.raf); this.raf=0;
+            if(this.score>this.best){this.best=this.score;localStorage.setItem('skyboundFlutterBest',String(this.best));}
+            this.updateUI(); this.showGameOver();
+            this.draw();
+        },
+        stop() { this.running=false; if(this.raf){cancelAnimationFrame(this.raf);this.raf=0;} },
+        quit() { this.stop(); app.goHome(); },
+        updateUI(){
+            const a=document.getElementById('flappy-score'),b=document.getElementById('flappy-best'),h=document.getElementById('flappy-header-best');
+            if(a)a.textContent=this.score;if(b)b.textContent=this.best;if(h)h.textContent=this.best;
+        },
+        showStartOverlay(){
+            const o=document.getElementById('flappy-overlay'); const t=document.getElementById('flappy-overlay-title'); const x=document.getElementById('flappy-overlay-text'); const r=document.getElementById('flappy-result'); const b=document.getElementById('flappy-play-btn');
+            if(!o)return; o.classList.remove('hidden'); t.textContent='Skybound Flutter'; x.textContent='Tap the sky or press Space to flap. Pass the cloud gates without touching them, the ground, or the ceiling.'; r.textContent=`Best score: ${this.best}`; b.textContent='Start Game';
+        },
+        showGameOver(){
+            const o=document.getElementById('flappy-overlay'); const t=document.getElementById('flappy-overlay-title'); const x=document.getElementById('flappy-overlay-text'); const r=document.getElementById('flappy-result'); const b=document.getElementById('flappy-play-btn');
+            if(!o)return; o.classList.remove('hidden'); t.textContent='Game Over'; x.textContent='The cloud gates got you. Ready for another flight?'; r.textContent=`Score: ${this.score}  •  Best: ${this.best}`; b.textContent='Play again';
+        },
+        hideOverlay(){document.getElementById('flappy-overlay')?.classList.add('hidden');},
+        draw(){
+            if(!this.ctx)return; const c=this.ctx,w=this.width,h=this.height; c.clearRect(0,0,w,h);
+            const sky=c.createLinearGradient(0,0,0,h); sky.addColorStop(0,'#06152a');sky.addColorStop(.55,'#0b3550');sky.addColorStop(1,'#0d5a61');c.fillStyle=sky;c.fillRect(0,0,w,h);
+            // Moon / sun glow
+            const rg=c.createRadialGradient(w*.78,h*.18,8,w*.78,h*.18,90);rg.addColorStop(0,'rgba(217,250,250,.45)');rg.addColorStop(1,'rgba(217,250,250,0)');c.fillStyle=rg;c.fillRect(0,0,w,h);
+            // Stars
+            for(const s of this.stars){c.fillStyle=`rgba(220,250,255,${0.35+s.p*.7})`;c.beginPath();c.arc(s.x,s.y,s.r,0,Math.PI*2);c.fill();}
+            // Parallax clouds
+            for(const cl of this.clouds){this.drawCloud(cl.x,cl.y,cl.w,cl.h);}
+            // Distant ridge
+            c.fillStyle='rgba(4,28,47,.48)';c.beginPath();c.moveTo(0,h*.82);for(let x=0;x<=w;x+=28)c.lineTo(x,h*.78+Math.sin((x+this.bgTime*24)/48)*14);c.lineTo(w,h);c.lineTo(0,h);c.closePath();c.fill();
+            // Pipes/gates as cloud pillars
+            for(const o of this.pipes){this.drawGate(o.x,0,this.cfg.pipeWidth,o.topH,true);this.drawGate(o.x,o.bottomY,this.cfg.pipeWidth,h-o.bottomY,false);}
+            // Ground mist
+            const ground=c.createLinearGradient(0,h*.93,0,h);ground.addColorStop(0,'rgba(84,239,216,.12)');ground.addColorStop(1,'rgba(6,20,33,.75)');c.fillStyle=ground;c.fillRect(0,h*.93,w,h*.07);
+            // Bird
+            c.save(); c.translate(this.player.x,this.player.y); c.rotate(this.player.rotation);
+            c.shadowColor='rgba(70,240,230,.42)';c.shadowBlur=18; c.fillStyle='#7ff6e0'; c.beginPath();c.arc(0,0,this.player.r,0,Math.PI*2);c.fill(); c.shadowBlur=0;
+            c.fillStyle='#164e63';c.beginPath();c.ellipse(-4,5,9,5,-.4,0,Math.PI*2);c.fill();
+            c.fillStyle='#062436';c.beginPath();c.arc(6,-5,2.4,0,Math.PI*2);c.fill();
+            c.fillStyle='#b9fff2';c.beginPath();c.moveTo(11,0);c.lineTo(21,4);c.lineTo(11,7);c.closePath();c.fill();
+            c.restore();
+        },
+        drawCloud(x,y,w,h){
+            const c=this.ctx;c.save();c.globalAlpha=.22;c.fillStyle='#e8feff';c.beginPath();c.ellipse(x+w*.25,y+h*.55,w*.25,h*.42,0,0,Math.PI*2);c.ellipse(x+w*.5,y+h*.38,w*.29,h*.55,0,0,Math.PI*2);c.ellipse(x+w*.72,y+h*.58,w*.24,h*.36,0,0,Math.PI*2);c.rect(x+w*.18,y+h*.5,w*.58,h*.3);c.fill();c.restore();
+        },
+        drawGate(x,y,w,h,capAtBottom){
+            if(h<=0)return; const c=this.ctx; const grad=c.createLinearGradient(x,0,x+w,0);grad.addColorStop(0,'#2db3ad');grad.addColorStop(.5,'#64e5d3');grad.addColorStop(1,'#177f7f');
+            c.fillStyle=grad;c.shadowColor='rgba(19,188,185,.32)';c.shadowBlur=14;c.fillRect(x,y,w,h);c.shadowBlur=0;
+            c.fillStyle='rgba(4,37,50,.24)';c.fillRect(x+6,y,6,h);
+            const capH=14;c.fillStyle='#8df7e2';if(capAtBottom)c.fillRect(x-5,y+h-capH,w+10,capH);else c.fillRect(x-5,y,w+10,capH);
+        }
+    };
 
 </script>
 
