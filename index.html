@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Brain Games - Train Your Brain & Reflexes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-primary: #070b19;
@@ -205,7 +208,7 @@
         }
         .btn-3d.rose:active { box-shadow: 0 0 0 #881337, 0 2px 4px rgba(0, 0, 0, 0.3); }
 
-        /* Specific State classes for Flash Quiz Feedback */
+        /* Specific State classes for Quiz Feedback */
         .btn-3d.correct-feedback {
             background-color: #059669 !important;
             background-image: linear-gradient(180deg, #34d399 0%, #059669 100%) !important;
@@ -682,7 +685,147 @@
             padding: 8px;
             font-size: 11px;
         }
+
+        /* ================= GAME 5: STROOP COLOR CHALLENGE ================= */
+        .stroop-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            justify-content: space-between;
+            max-width: 380px;
+            margin: 0 auto;
+            width: 100%;
+            padding-bottom: 16px;
+        }
+        .stroop-word-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px 16px;
+            text-align: center;
+            font-size: 42px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            text-transform: uppercase;
+        }
+        .stroop-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .stroop-btn {
+            padding: 16px;
+            font-size: 16px;
+            text-transform: uppercase;
+        }
+
+        /* ================= GAME 6: PATTERN RECALL ================= */
+        .pattern-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            justify-content: space-between;
+            max-width: 380px;
+            margin: 0 auto;
+            width: 100%;
+            padding-bottom: 16px;
+            text-align: center;
+        }
+        .pattern-status-msg {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            margin-bottom: 12px;
+            min-height: 22px;
+        }
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 300px;
+            aspect-ratio: 1/1;
+        }
+        .pattern-tile {
+            border-radius: var(--radius-md);
+            border: 2px solid rgba(255,255,255,0.15);
+            cursor: pointer;
+            transition: transform 0.1s, filter 0.1s, box-shadow 0.1s;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            opacity: 0.6;
+        }
+        .pattern-tile:active {
+            transform: scale(0.95);
+        }
+        .pattern-tile.active-glow {
+            opacity: 1;
+            filter: brightness(1.6);
+            box-shadow: 0 0 25px currentColor;
+            transform: scale(1.04);
+        }
+    
+        /* ================= GAME 7: BURROW BASH ================= */
+        .burrow-screen{font-family:'Nunito',sans-serif;}
+        .burrow-wrap{width:100%;max-width:520px;margin:0 auto;padding:4px 0 18px;}
+        .burrow-heading{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:clamp(30px,7vw,42px);margin:0;color:#dff6df;text-align:center;letter-spacing:.4px;}
+        .burrow-tagline{text-align:center;margin:0 0 14px;font-size:14px;color:#b9d5ad;font-weight:700;}
+        .burrow-hud{display:flex;justify-content:space-between;align-items:stretch;gap:9px;margin-bottom:14px;}
+        .burrow-stat{flex:1;background:#fbf4e6;border-radius:14px;padding:9px 10px;text-align:center;box-shadow:0 3px 0 #2d1d13,inset 0 0 0 2px rgba(62,43,31,.12);}
+        .burrow-stat .label{font-size:10px;font-weight:800;color:#5c4130;margin-bottom:1px;}
+        .burrow-stat .value{font-family:'Baloo 2',sans-serif;font-size:25px;font-weight:800;color:#3e2b1f;line-height:1;}
+        .burrow-field{background:linear-gradient(180deg,#5c4130 0%,#3e2b1f 100%);border-radius:22px;padding:18px;box-shadow:0 8px 0 rgba(0,0,0,.25),inset 0 2px 8px rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);}
+        .burrow-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;}
+        .burrow-hole{position:relative;aspect-ratio:1/.86;border-radius:50%;background:radial-gradient(ellipse at 50% 40%,#1f150e 0%,#362518 56%,#4a3524 100%);overflow:hidden;box-shadow:inset 0 8px 14px rgba(0,0,0,.6),inset 0 -3px 0 rgba(255,255,255,.05);cursor:pointer;touch-action:manipulation;}
+        .burrow-mole{position:absolute;left:50%;bottom:-100%;transform:translate(-50%,0);width:72%;transition:bottom .12s cubic-bezier(.3,1.5,.6,1);user-select:none;pointer-events:none;}
+        .burrow-hole.up .burrow-mole{bottom:6%;}
+        .burrow-hole.whacked .burrow-mole{transition:bottom .08s ease-out;bottom:-20%;}
+        .burrow-mole svg{width:100%;display:block;}
+        .burrow-hole.whacked::after{content:'+1';position:absolute;top:4px;left:50%;transform:translateX(-50%);font-family:'Baloo 2',sans-serif;font-weight:800;color:#f4b24f;font-size:20px;animation:burrowPop .5s ease-out forwards;pointer-events:none;}
+        @keyframes burrowPop{0%{opacity:0;transform:translate(-50%,4px) scale(.8)}30%{opacity:1;transform:translate(-50%,-6px) scale(1.1)}100%{opacity:0;transform:translate(-50%,-18px) scale(1)}}
+        .burrow-actions{display:flex;justify-content:center;margin-top:18px;}
+        .burrow-play{min-width:170px;font-family:'Baloo 2',sans-serif;font-size:18px;padding:12px 26px;border-radius:14px;background:linear-gradient(180deg,#efb354,#d48627);box-shadow:0 5px 0 #8a5613,0 7px 15px rgba(0,0,0,.25);}
+        .burrow-play:active{box-shadow:0 1px 0 #8a5613,0 2px 6px rgba(0,0,0,.25);}
+        .burrow-play:disabled{opacity:.72;cursor:default;}
+        .burrow-end-msg{text-align:center;font-family:'Baloo 2',sans-serif;font-size:17px;color:#f3e6cd;font-weight:800;min-height:25px;margin-top:10px;}
+        @media(max-width:420px){.burrow-wrap{padding-top:0}.burrow-field{padding:14px}.burrow-grid{gap:10px}.burrow-stat{padding:8px 7px}.burrow-stat .value{font-size:23px}}
+        @media(prefers-reduced-motion:reduce){.burrow-mole,.burrow-hole.whacked::after{transition:none;animation:none}}
+
+
+        /* ================= GAME 8: HIGHWAY RUSH ================= */
+        .car-screen { overflow: hidden; }
+        .car-wrap { display:flex; flex-direction:column; flex:1; min-height:0; position:relative; }
+        .car-hud { display:flex; flex-wrap:wrap; justify-content:center; gap:6px 10px; margin:0 0 8px; font-size:11px; }
+        .car-hud-item { background:rgba(15,23,42,.82); border:1px solid var(--border-color); border-radius:8px; padding:6px 9px; box-shadow:0 4px 10px rgba(0,0,0,.22); }
+        .car-hud-item strong { color:#fff; margin-left:3px; }
+        .car-stage { position:relative; width:100%; flex:1; min-height:410px; max-height:calc(100dvh - 180px); border:1px solid var(--border-color); border-radius:16px; overflow:hidden; background:#08111f; box-shadow:var(--shadow); touch-action:none; }
+        #carCanvas { width:100%; height:100%; display:block; touch-action:none; }
+        .car-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+        .car-message { display:none; width:min(88%,360px); padding:18px; border-radius:16px; text-align:center; background:rgba(7,11,25,.9); border:1px solid rgba(6,182,212,.35); box-shadow:0 14px 35px rgba(0,0,0,.45); backdrop-filter:blur(8px); }
+        .car-message.active { display:block; pointer-events:auto; }
+        .car-message h2 { font-size:24px; color:var(--accent-cyan); margin-bottom:7px; }
+        .car-message p { font-size:12px; color:var(--text-muted); line-height:1.45; margin-bottom:12px; }
+        .car-controls { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:9px; width:min(420px,100%); align-self:center; }
+        .car-control { min-height:48px; padding:10px; font-size:13px; touch-action:none; }
+        .car-control.wide { grid-column:span 1; }
+        .car-ctrl-label { font-size:10px; opacity:.8; display:block; }
+        .car-landscape-note { display:none; }
+        .car-dest { color:#fbbf24 !important; }
+        @media (max-width: 560px) {
+            .car-stage { min-height:390px; }
+            .car-hud { gap:5px; }
+            .car-hud-item { padding:5px 7px; }
+        }
+        @media (max-height: 520px) and (orientation:landscape) {
+            .car-stage { min-height:250px; max-height:calc(100dvh - 118px); }
+            .car-controls { grid-template-columns:repeat(4,1fr); }
+            .car-controls .car-control:nth-child(4) { grid-column:auto; }
+            .car-landscape-note { display:block; text-align:center; font-size:10px; color:var(--text-muted); margin-top:5px; }
+        }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
@@ -756,6 +899,57 @@
                     <span class="skill-tag">Logic</span>
                 </div>
                 <button class="btn-3d btn-play" onclick="app.openGame('sudoku')">PLAY</button>
+            </div>
+
+            <!-- Game 5 (NEW) -->
+            <div class="game-card">
+                <div class="game-card-content">
+                    <div class="game-card-icon">🎨</div>
+                    <div>
+                        <h3>Stroop Challenge</h3>
+                        <p>Choose the color, not the word.</p>
+                    </div>
+                    <span class="skill-tag">Focus + Inhibition</span>
+                </div>
+                <button class="btn-3d btn-play" onclick="app.openGame('stroop')">PLAY</button>
+            </div>
+
+            <!-- Game 6 (NEW) -->
+            <div class="game-card">
+                <div class="game-card-content">
+                    <div class="game-card-icon">🔀</div>
+                    <div>
+                        <h3>Pattern Recall</h3>
+                        <p>Remember and repeat sequence.</p>
+                    </div>
+                    <span class="skill-tag">Memory + Conc</span>
+                </div>
+                <button class="btn-3d btn-play" onclick="app.openGame('pattern')">PLAY</button>
+            </div>
+            <!-- Game 7 (NEW) -->
+            <div class="game-card">
+                <div class="game-card-content">
+                    <div class="game-card-icon">🦫</div>
+                    <div>
+                        <h3>Burrow Bash</h3>
+                        <p>Tap the moles before they hide.</p>
+                    </div>
+                    <span class="skill-tag">Reflex + Speed</span>
+                </div>
+                <button class="btn-3d btn-play" onclick="app.openGame('burrow')">PLAY</button>
+            </div>
+
+            <!-- Game 8 (NEW) -->
+            <div class="game-card">
+                <div class="game-card-content">
+                    <div class="game-card-icon">🏎️</div>
+                    <div>
+                        <h3>Highway Rush</h3>
+                        <p>Drive, dodge traffic & reach the flag.</p>
+                    </div>
+                    <span class="skill-tag">Driving + Reflex</span>
+                </div>
+                <button class="btn-3d btn-play" onclick="app.openGame('car')">PLAY</button>
             </div>
         </div>
 
@@ -919,7 +1113,136 @@
         </div>
     </div>
 
+
+    <!-- ================= GAME 5: STROOP COLOR CHALLENGE SCREEN (NEW) ================= -->
+    <div id="screen-stroop" class="screen">
+        <div class="game-header">
+            <button class="btn-3d btn-home" onclick="app.goHome()">← Home</button>
+            <div class="game-title-bar">🎨 Stroop Challenge</div>
+            <div class="hud-stats">Score: <span id="stroop-score">0</span></div>
+        </div>
+
+        <div id="stroop-diff-view" class="difficulty-screen">
+            <h3>Stroop Color Challenge</h3>
+            <p style="color:var(--text-muted); font-size:12px; max-width:260px;">Tap the ACTUAL text color, ignoring the word meaning!</p>
+            <div class="difficulty-buttons">
+                <button class="btn-3d teal btn-diff" onclick="stroopGame.start()">Start Game (30s)</button>
+            </div>
+        </div>
+
+        <div id="stroop-play-view" class="game-play-area">
+            <div class="stroop-container">
+                <div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:6px;">
+                        <span>Time: <strong id="stroop-timer" style="color:#fff;">30</strong>s</span>
+                        <span>Correct: <strong id="stroop-correct" style="color:var(--success);">0</strong></span>
+                    </div>
+                    <div class="flash-progress-bar">
+                        <div id="stroop-progress-fill" class="flash-progress-fill"></div>
+                    </div>
+                    <div id="stroop-word-box" class="stroop-word-box">RED</div>
+                </div>
+                <div class="stroop-options" id="stroop-options">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= GAME 6: PATTERN RECALL SCREEN (NEW) ================= -->
+    <div id="screen-pattern" class="screen">
+        <div class="game-header">
+            <button class="btn-3d btn-home" onclick="app.goHome()">← Home</button>
+            <div class="game-title-bar">🔀 Pattern Recall</div>
+            <div class="hud-stats">Lvl <span id="pattern-level">1</span> | Score <span id="pattern-score">0</span></div>
+        </div>
+
+        <div id="pattern-diff-view" class="difficulty-screen">
+            <h3>Pattern Memory Recall</h3>
+            <p style="color:var(--text-muted); font-size:12px; max-width:260px;">Watch the sequence carefully, then repeat it back in exact order.</p>
+            <div class="difficulty-buttons">
+                <button class="btn-3d teal btn-diff" onclick="patternGame.start()">Start Game</button>
+            </div>
+        </div>
+
+        <div id="pattern-play-view" class="game-play-area">
+            <div class="pattern-container">
+                <div>
+                    <div id="pattern-status-msg" class="pattern-status-msg">Watch the Pattern</div>
+                </div>
+                <div class="pattern-grid" id="pattern-grid">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<!-- ================= GAME 7: BURROW BASH SCREEN ================= -->
+<div id="screen-burrow" class="screen burrow-screen">
+  <div class="game-header">
+    <button class="btn-3d btn-home" onclick="burrowGame.quit()">← Home</button>
+    <div class="game-title-bar">🦫 Burrow Bash</div>
+    <div class="hud-stats">Score: <span id="burrow-header-score">0</span></div>
+  </div>
+  <div class="burrow-wrap">
+    <h2 class="burrow-heading">Burrow Bash</h2>
+    <p class="burrow-tagline">Tap the moles before they duck back down</p>
+    <div class="burrow-hud">
+      <div class="burrow-stat"><div class="label">SCORE</div><div class="value" id="burrow-score">0</div></div>
+      <div class="burrow-stat"><div class="label">TIME</div><div class="value" id="burrow-time">30</div></div>
+      <div class="burrow-stat"><div class="label">BEST</div><div class="value" id="burrow-best">0</div></div>
+    </div>
+    <div class="burrow-field"><div class="burrow-grid" id="burrow-grid"></div></div>
+    <div class="burrow-actions"><button class="btn-3d burrow-play" id="burrow-play-btn">Start game</button></div>
+    <div class="burrow-end-msg" id="burrow-end-msg"></div>
+  </div>
 </div>
+
+</div>
+
+
+
+    <!-- ================= GAME 8: HIGHWAY RUSH SCREEN ================= -->
+    <div id="screen-car" class="screen car-screen">
+        <div class="game-header">
+            <button class="btn-3d btn-home" onclick="carGame.quit()">← Home</button>
+            <div class="game-title-bar">🏎️ Highway Rush</div>
+            <div class="hud-stats">Lives: <span id="car-lives">❤️❤️❤️</span></div>
+        </div>
+        <div class="car-wrap">
+            <div class="car-hud">
+                <div class="car-hud-item">Speed <strong id="car-speed">0</strong> km/h</div>
+                <div class="car-hud-item">Distance <strong id="car-distance">0</strong> m</div>
+                <div class="car-hud-item">Score <strong id="car-score">0</strong></div>
+                <div class="car-hud-item">Level <strong id="car-level">1</strong></div>
+                <div class="car-hud-item car-dest">Finish <strong id="car-finish">3000</strong> m</div>
+            </div>
+            <div class="car-stage" id="car-stage">
+                <canvas id="carCanvas"></canvas>
+                <div class="car-overlay">
+                    <div class="car-message active" id="car-start-panel">
+                        <h2>Highway Rush</h2>
+                        <p>Stay on the road, avoid traffic and reach the finish flag. Your speed builds smoothly as you accelerate.</p>
+                        <button class="btn-3d teal btn-modal" onclick="carGame.start()">Start Drive</button>
+                    </div>
+                    <div class="car-message" id="car-life-panel">
+                        <h2 id="car-life-title">Crash!</h2>
+                        <p id="car-life-text">Life lost. Ready for another run?</p>
+                        <button class="btn-3d amber btn-modal" onclick="carGame.restartAfterLife()">START AGAIN</button>
+                    </div>
+                </div>
+            </div>
+            <div class="car-controls">
+                <button class="btn-3d car-control" data-car-control="left">◀<span class="car-ctrl-label">STEER</span></button>
+                <button class="btn-3d teal car-control" data-car-control="accelerate">▲<span class="car-ctrl-label">ACCELERATE</span></button>
+                <button class="btn-3d amber car-control" data-car-control="brake">▼<span class="car-ctrl-label">BRAKE</span></button>
+                <button class="btn-3d car-control" data-car-control="right">▶<span class="car-ctrl-label">STEER</span></button>
+            </div>
+            <div class="car-landscape-note">Best on mobile landscape • touch controls are active</div>
+        </div>
+    </div>
 
 <!-- Generic Result Modal -->
 <div id="result-modal" class="modal-overlay">
@@ -964,6 +1287,9 @@
             document.getElementById(`screen-${gameName}`).classList.add('active');
             this.currentScreen = gameName;
 
+            if (gameName === 'burrow') burrowGame.prepare();
+            if (gameName === 'car') carGame.prepare();
+
             if (gameName === 'flash') {
                 document.getElementById('flash-diff-view').style.display = 'flex';
                 document.getElementById('flash-play-view').style.display = 'none';
@@ -976,6 +1302,12 @@
             } else if (gameName === 'sudoku') {
                 document.getElementById('sudoku-diff-view').style.display = 'flex';
                 document.getElementById('sudoku-play-view').style.display = 'none';
+            } else if (gameName === 'stroop') {
+                document.getElementById('stroop-diff-view').style.display = 'flex';
+                document.getElementById('stroop-play-view').style.display = 'none';
+            } else if (gameName === 'pattern') {
+                document.getElementById('pattern-diff-view').style.display = 'flex';
+                document.getElementById('pattern-play-view').style.display = 'none';
             }
         },
 
@@ -984,6 +1316,10 @@
             bricksGame.stop();
             connectGame.stop();
             sudokuGame.stop();
+            stroopGame.stop();
+            patternGame.stop();
+            burrowGame.stop();
+            carGame.stop();
 
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('screen-home').classList.add('active');
@@ -1189,7 +1525,7 @@
     };
 
 
-    /* ================= GAME 2: BALL & BRICKS (FIXED ASPECT RATIO & SWEPT PADDLE COLLISION) ================= */
+    /* ================= GAME 2: BALL & BRICKS ================= */
     const bricksGame = {
         canvas: null,
         ctx: null,
@@ -1214,7 +1550,6 @@
             this.canvas = document.getElementById('brickCanvas');
             this.ctx = this.canvas.getContext('2d');
             
-            // Exact logical matching 9:14 aspect ratio (360 x 560)
             this.canvas.width = 360;
             this.canvas.height = 560;
 
@@ -1273,20 +1608,19 @@
                 }
             }
 
-            // Paddle width start at 100px, minimum 78px
-            this.paddle.w = Math.max(78, 100 - (this.level - 1) * 3);
+            this.paddle.w = Math.max(52, 96 - (this.level - 1) * 8);
             this.paddle.x = (this.canvas.width - this.paddle.w) / 2;
             this.paddle.y = this.canvas.height - 55;
 
-            this.ball.speed = 4 + (this.level - 1) * 0.4;
+            this.ball.speed = 4 + (this.level - 1) * 0.45;
             this.resetBallAfterLifeLoss();
         },
 
         resetBallAfterLifeLoss() {
-            this.ball.x = this.canvas.width / 2;
+            this.ball.x = this.paddle.x + this.paddle.w / 2;
             this.ball.y = this.paddle.y - this.ball.r - 10;
-            this.ball.dx = (Math.random() > 0.5 ? 1 : -1) * this.ball.speed * 0.7;
-            this.ball.dy = -Math.abs(this.ball.speed * 0.7);
+            this.ball.dx = (Math.random() > 0.5 ? 1 : -1) * this.ball.speed * 0.6;
+            this.ball.dy = -Math.abs(this.ball.speed * 0.75);
         },
 
         loseLife() {
@@ -1337,11 +1671,9 @@
             const prevX = this.ball.x;
             const prevY = this.ball.y;
 
-            // Move ball
             this.ball.x += this.ball.dx;
             this.ball.y += this.ball.dy;
 
-            // Wall collisions (Left / Right)
             if (this.ball.x - this.ball.r < 0) {
                 this.ball.x = this.ball.r;
                 this.ball.dx = -this.ball.dx;
@@ -1350,13 +1682,11 @@
                 this.ball.dx = -this.ball.dx;
             }
 
-            // Wall collision (Top)
             if (this.ball.y - this.ball.r < 0) {
                 this.ball.y = this.ball.r;
                 this.ball.dy = -this.ball.dy;
             }
 
-            // SWEPT PADDLE COLLISION CHECK
             if (this.ball.dy > 0) {
                 const paddleTop = this.paddle.y;
                 const paddleLeft = this.paddle.x;
@@ -1374,19 +1704,16 @@
                     this.ball.y = paddleTop - this.ball.r;
                     this.ball.dy = -Math.abs(this.ball.dy);
 
-                    // Add spin relative to strike position
                     let hitOffset = (this.ball.x - (paddleLeft + this.paddle.w / 2)) / (this.paddle.w / 2);
-                    this.ball.dx = hitOffset * this.ball.speed * 1.3;
+                    this.ball.dx = hitOffset * this.ball.speed * 1.35;
                 }
             }
 
-            // Ball miss / Life loss check
             if (this.ball.y - this.ball.r > this.canvas.height) {
                 this.loseLife();
                 if (this.isGameOver) return;
             }
 
-            // Brick collisions
             let activeBricksCount = 0;
             for (let b of this.bricks) {
                 if (b.status === 1) {
@@ -1405,7 +1732,6 @@
                 }
             }
 
-            // Level complete
             if (activeBricksCount === 0) {
                 this.level++;
                 document.getElementById('bricks-level').innerText = this.level;
@@ -1416,7 +1742,6 @@
         draw() {
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-            // Draw Bricks
             for (let b of this.bricks) {
                 if (b.status === 1) {
                     this.ctx.fillStyle = b.color;
@@ -1429,7 +1754,6 @@
                 }
             }
 
-            // Draw 3D-styled movable Paddle Base
             const pGrad = this.ctx.createLinearGradient(this.paddle.x, this.paddle.y, this.paddle.x, this.paddle.y + this.paddle.h);
             pGrad.addColorStop(0, '#38bdf8');
             pGrad.addColorStop(1, '#0284c7');
@@ -1443,7 +1767,6 @@
             this.ctx.roundRect(this.paddle.x, this.paddle.y + this.paddle.h - 4, this.paddle.w, 4, [0, 0, 8, 8]);
             this.ctx.fill();
 
-            // Draw Ball with soft glow
             this.ctx.shadowColor = '#06b6d4';
             this.ctx.shadowBlur = 8;
             this.ctx.fillStyle = '#f8fafc';
@@ -1452,7 +1775,6 @@
             this.ctx.fill();
             this.ctx.shadowBlur = 0;
 
-            // Draw Lives Indicator on Canvas Top
             this.ctx.fillStyle = '#94a3b8';
             this.ctx.font = '11px sans-serif';
             this.ctx.fillText(`Lives: ${'❤️'.repeat(this.lives)}`, 10, 20);
@@ -1790,6 +2112,771 @@
             }, () => this.start(this.difficulty));
         }
     };
+
+
+    /* ================= GAME 5: STROOP COLOR CHALLENGE (NEW) ================= */
+    const stroopGame = {
+        timer: 30,
+        interval: null,
+        score: 0,
+        correctCount: 0,
+        wrongCount: 0,
+        attempted: 0,
+        usedSignatures: new Set(),
+        currentColorKey: '',
+        isTransitioning: false,
+        colors: [
+            { name: 'RED', hex: '#ef4444' },
+            { name: 'BLUE', hex: '#3b82f6' },
+            { name: 'GREEN', hex: '#10b981' },
+            { name: 'YELLOW', hex: '#f59e0b' },
+            { name: 'PURPLE', hex: '#a855f7' },
+            { name: 'ORANGE', hex: '#f97316' }
+        ],
+
+        start() {
+            this.score = 0;
+            this.correctCount = 0;
+            this.wrongCount = 0;
+            this.attempted = 0;
+            this.usedSignatures.clear();
+            this.timer = 30;
+            this.isTransitioning = false;
+
+            document.getElementById('stroop-diff-view').style.display = 'none';
+            document.getElementById('stroop-play-view').style.display = 'flex';
+            document.getElementById('stroop-score').innerText = '0';
+            document.getElementById('stroop-correct').innerText = '0';
+
+            this.nextQuestion();
+
+            if (this.interval) clearInterval(this.interval);
+            const startTime = Date.now();
+            const totalTime = 30;
+
+            this.interval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const remaining = totalTime - elapsed;
+                this.timer = Math.max(0, remaining);
+
+                document.getElementById('stroop-timer').innerText = this.timer;
+                document.getElementById('stroop-progress-fill').style.width = `${(this.timer / totalTime) * 100}%`;
+
+                if (this.timer <= 0) {
+                    this.stop();
+                    this.gameOver();
+                }
+            }, 200);
+        },
+
+        stop() {
+            if (this.interval) {
+                clearInterval(this.interval);
+                this.interval = null;
+            }
+        },
+
+        nextQuestion() {
+            this.isTransitioning = false;
+            let wordObj, colorObj, signature;
+
+            // Ensure unique question combination per session
+            let safety = 0;
+            while (safety < 100) {
+                wordObj = this.colors[Math.floor(Math.random() * this.colors.length)];
+                colorObj = this.colors[Math.floor(Math.random() * this.colors.length)];
+                // Ensure word and actual text color are different for true Stroop effect
+                if (wordObj.name !== colorObj.name) {
+                    signature = `${wordObj.name}|${colorObj.name}`;
+                    if (!this.usedSignatures.has(signature)) {
+                        this.usedSignatures.add(signature);
+                        break;
+                    }
+                }
+                safety++;
+            }
+            if (this.usedSignatures.size > 100) this.usedSignatures.clear();
+
+            this.currentColorKey = colorObj.name;
+
+            const wordBox = document.getElementById('stroop-word-box');
+            wordBox.innerText = wordObj.name;
+            wordBox.style.color = colorObj.hex;
+
+            // Generate 4 randomized color option buttons
+            let options = [colorObj];
+            while (options.length < 4) {
+                let randCol = this.colors[Math.floor(Math.random() * this.colors.length)];
+                if (!options.includes(randCol)) {
+                    options.push(randCol);
+                }
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            const container = document.getElementById('stroop-options');
+            container.innerHTML = '';
+            options.forEach(opt => {
+                container.innerHTML += `<button class="btn-3d stroop-btn" onclick="stroopGame.answer('${opt.name}', this)">${opt.name}</button>`;
+            });
+        },
+
+        answer(selectedName, btnEl) {
+            if (this.isTransitioning || this.timer <= 0) return;
+            this.isTransitioning = true;
+            this.attempted++;
+
+            const allButtons = document.querySelectorAll('.stroop-btn');
+
+            if (selectedName === this.currentColorKey) {
+                this.correctCount++;
+                this.score += 10;
+                document.getElementById('stroop-score').innerText = this.score;
+                document.getElementById('stroop-correct').innerText = this.correctCount;
+
+                btnEl.classList.add('correct-feedback');
+                btnEl.innerHTML = `${selectedName} ✓`;
+            } else {
+                this.wrongCount++;
+                btnEl.classList.add('wrong-feedback');
+                btnEl.innerHTML = `${selectedName} ✕`;
+
+                allButtons.forEach(b => {
+                    if (b.innerText.includes(this.currentColorKey)) {
+                        b.classList.add('correct-feedback');
+                    }
+                });
+            }
+
+            allButtons.forEach(b => b.style.pointerEvents = 'none');
+
+            setTimeout(() => {
+                if (this.timer > 0) {
+                    this.nextQuestion();
+                }
+            }, 350);
+        },
+
+        gameOver() {
+            this.stop();
+            const accuracy = this.attempted > 0 ? Math.round((this.correctCount / this.attempted) * 100) : 0;
+            const storageKey = `${STORAGE_PREFIX}stroop`;
+            const best = Math.max(this.score, Number(localStorage.getItem(storageKey) || 0));
+            localStorage.setItem(storageKey, best);
+
+            app.showModal("Stroop Complete!", {
+                "Final Score": this.score,
+                "Correct": this.correctCount,
+                "Wrong": this.wrongCount,
+                "Accuracy": `${accuracy}%`,
+                "Best Score": best
+            }, () => this.start());
+        }
+    };
+
+
+    /* ================= GAME 6: PATTERN RECALL (NEW) ================= */
+    const patternGame = {
+        level: 1,
+        score: 0,
+        sequence: [],
+        playerIndex: 0,
+        isPlayback: false,
+        usedSignatures: new Set(),
+        colorsPool: [
+            { id: 0, name: 'Red', hex: '#ef4444' },
+            { id: 1, name: 'Blue', hex: '#3b82f6' },
+            { id: 2, name: 'Green', hex: '#10b981' },
+            { id: 3, name: 'Yellow', hex: '#f59e0b' },
+            { id: 4, name: 'Purple', hex: '#a855f7' },
+            { id: 5, name: 'Orange', hex: '#f97316' }
+        ],
+
+        start() {
+            this.level = 1;
+            this.score = 0;
+            this.usedSignatures.clear();
+
+            document.getElementById('pattern-diff-view').style.display = 'none';
+            document.getElementById('pattern-play-view').style.display = 'flex';
+            document.getElementById('pattern-level').innerText = '1';
+            document.getElementById('pattern-score').innerText = '0';
+
+            this.buildGrid();
+            this.nextRound();
+        },
+
+        stop() {
+            this.isPlayback = false;
+        },
+
+        quit() {
+            this.stop();
+            app.goHome();
+        },
+
+        getActiveColorsCount() {
+            // Progressive color pool size: Levels 1-2: 4 colors, Levels 3-4: 5 colors, Level 5+: 6 colors
+            if (this.level <= 2) return 4;
+            if (this.level <= 4) return 5;
+            return 6;
+        },
+
+        getSequenceLength() {
+            // Progressive length: Level 1=3, Level 2=4, Level 3=5, Level 4=6, etc.
+            return Math.min(2 + this.level, 10);
+        },
+
+        buildGrid() {
+            const count = this.getActiveColorsCount();
+            const grid = document.getElementById('pattern-grid');
+            grid.innerHTML = '';
+            grid.style.gridTemplateColumns = count > 4 ? 'repeat(3, 1fr)' : 'repeat(2, 1fr)';
+
+            for (let i = 0; i < count; i++) {
+                let col = this.colorsPool[i];
+                grid.innerHTML += `
+                    <div class="pattern-tile" id="tile-${col.id}" style="background-color: ${col.hex}; color: ${col.hex};" onclick="patternGame.handleTileTap(${col.id})"></div>
+                `;
+            }
+        },
+
+        nextRound() {
+            this.buildGrid();
+            this.playerIndex = 0;
+            this.isPlayback = true;
+
+            const msgEl = document.getElementById('pattern-status-msg');
+            msgEl.innerText = "Watch the Pattern";
+
+            let activeCount = this.getActiveColorsCount();
+            let seqLen = this.getSequenceLength();
+            let newSeq = [];
+            let signature = '';
+
+            let safety = 0;
+            while (safety < 100) {
+                newSeq = [];
+                for (let i = 0; i < seqLen; i++) {
+                    let randIndex = Math.floor(Math.random() * activeCount);
+                    newSeq.push(randIndex);
+                }
+                signature = newSeq.join(',');
+                if (!this.usedSignatures.has(signature)) {
+                    this.usedSignatures.add(signature);
+                    break;
+                }
+                safety++;
+            }
+            if (this.usedSignatures.size > 150) this.usedSignatures.clear();
+            this.sequence = newSeq;
+
+            // Playback sequence with delay animation
+            let delay = 600;
+            this.sequence.forEach((tileId, idx) => {
+                setTimeout(() => {
+                    if (!this.isPlayback && document.getElementById('screen-pattern').className.indexOf('active') === -1) return;
+                    this.flashTile(tileId);
+                }, (idx + 1) * delay);
+            });
+
+            setTimeout(() => {
+                if (document.getElementById('screen-pattern').className.indexOf('active') !== -1) {
+                    this.isPlayback = false;
+                    msgEl.innerText = "Your Turn";
+                }
+            }, (this.sequence.length + 1) * delay);
+        },
+
+        flashTile(id) {
+            const tile = document.getElementById(`tile-${id}`);
+            if (tile) {
+                tile.classList.add('active-glow');
+                setTimeout(() => {
+                    tile.classList.remove('active-glow');
+                }, 350);
+            }
+        },
+
+        handleTileTap(id) {
+            if (this.isPlayback) return;
+
+            const tile = document.getElementById(`tile-${id}`);
+            if (!tile) return;
+
+            // Flash tapped tile briefly for touch feedback
+            tile.classList.add('active-glow');
+            setTimeout(() => tile.classList.remove('active-glow'), 200);
+
+            if (id === this.sequence[this.playerIndex]) {
+                this.playerIndex++;
+                if (this.playerIndex >= this.sequence.length) {
+                    this.score += this.level * 10;
+                    this.level++;
+                    document.getElementById('pattern-level').innerText = this.level;
+                    document.getElementById('pattern-score').innerText = this.score;
+
+                    const msgEl = document.getElementById('pattern-status-msg');
+                    msgEl.innerText = "Correct! Next Level...";
+
+                    setTimeout(() => {
+                        if (document.getElementById('screen-pattern').className.indexOf('active') !== -1) {
+                            this.nextRound();
+                        }
+                    }, 1000);
+                }
+            } else {
+                // Wrong tap
+                this.isPlayback = true;
+                tile.style.borderColor = 'var(--danger)';
+                setTimeout(() => tile.style.borderColor = '', 400);
+                this.gameOver();
+            }
+        },
+
+        gameOver() {
+            this.stop();
+            const storageKey = `${STORAGE_PREFIX}patternRecall`;
+            const best = Math.max(this.score, Number(localStorage.getItem(storageKey) || 0));
+            localStorage.setItem(storageKey, best);
+
+            app.showModal("Pattern Failed", {
+                "Level Reached": this.level,
+                "Score": this.score,
+                "Best Score": best
+            }, () => this.start());
+        }
+    };
+
+
+    /* ================= GAME 8: HIGHWAY RUSH ================= */
+    const carGame = {
+        scene: null, camera: null, renderer: null, animationId: null,
+        road: null, player: null, frontWheels: [], finishGate: null,
+        traffic: [], laneMarkers: [], roadside: [],
+        keys: {left:false,right:false,accelerate:false,brake:false},
+        running:false, pausedForLife:false, initialized:false,
+        lives:3, speed:0, distance:0, score:0, level:1,
+        targetSpeed:42, maxSpeed:96, finishDistance:3000,
+        lastTs:0, spawnClock:0, nearMisses:0,
+        playerX:0, yaw:0, steer:0,
+        laneCenters:[-6,-2,2,6],
+        roadHalf:9,
+        config:{ worldScale:1, laneSpacing:4, trafficMinGap:16 },
+
+        prepare(){
+            this.stop();
+            this.lives=3; this.speed=0; this.distance=0; this.score=0; this.level=1; this.targetSpeed=42; this.maxSpeed=96; this.playerX=-2; this.yaw=0; this.steer=0; this.nearMisses=0; this.spawnClock=0; this.pausedForLife=false;
+            this.ensureScene();
+            this.resetWorld();
+            this.updateHud();
+            document.getElementById('car-start-panel')?.classList.add('active');
+            document.getElementById('car-life-panel')?.classList.remove('active');
+        },
+
+        ensureScene(){
+            if(this.initialized) return;
+            if(typeof THREE === 'undefined') return;
+            const canvas=document.getElementById('carCanvas');
+            const stage=document.getElementById('car-stage');
+            if(!canvas || !stage) return;
+            this.scene=new THREE.Scene();
+            this.scene.fog=new THREE.Fog(0x101a2b,45,230);
+            this.camera=new THREE.PerspectiveCamera(60,1,0.1,500);
+            this.camera.position.set(0,5.2,10.5);
+            this.renderer=new THREE.WebGLRenderer({canvas, antialias:true, alpha:false});
+            this.renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.8));
+            this.renderer.setClearColor(0x07111f,1);
+            this.resize();
+            window.addEventListener('resize',()=>this.resize(),{passive:true});
+            if(window.screen?.orientation?.addEventListener) window.screen.orientation.addEventListener('change',()=>setTimeout(()=>this.resize(),120));
+
+            const hemi=new THREE.HemisphereLight(0xbfe9ff,0x162034,1.25); this.scene.add(hemi);
+            const sun=new THREE.DirectionalLight(0xffffff,1.6); sun.position.set(-20,35,15); this.scene.add(sun);
+            const fill=new THREE.DirectionalLight(0x7dd3fc,.35); fill.position.set(20,10,-40); this.scene.add(fill);
+
+            const groundMat=new THREE.MeshStandardMaterial({color:0x1c4732, roughness:1});
+            const ground=new THREE.Mesh(new THREE.PlaneGeometry(400,700),groundMat); ground.rotation.x=-Math.PI/2; ground.position.y=-0.12; ground.position.z=-250; this.scene.add(ground);
+
+            this.buildRoad();
+            this.player=this.buildCar(0x06b6d4,true); this.player.position.set(this.playerX,0.48,0); this.scene.add(this.player);
+            this.buildScenery();
+            this.buildFinishGate();
+            this.bindControls();
+            this.initialized=true;
+        },
+
+        resize(){
+            if(!this.renderer || !this.camera) return;
+            const el=document.getElementById('car-stage'); if(!el) return;
+            const w=Math.max(1,el.clientWidth), h=Math.max(1,el.clientHeight);
+            this.camera.aspect=w/h; this.camera.updateProjectionMatrix(); this.renderer.setSize(w,h,false);
+        },
+
+        buildRoad(){
+            const roadMat=new THREE.MeshStandardMaterial({color:0x273142, roughness:.92, metalness:.02});
+            this.road=new THREE.Mesh(new THREE.PlaneGeometry(18,700),roadMat); this.road.rotation.x=-Math.PI/2; this.road.position.set(0,0, -245); this.scene.add(this.road);
+            const edgeMat=new THREE.MeshStandardMaterial({color:0x64748b, roughness:.8});
+            for(const x of [-9,9]){
+                const edge=new THREE.Mesh(new THREE.BoxGeometry(.22,.08,700),edgeMat); edge.position.set(x,.04,-245); this.scene.add(edge);
+            }
+            const dividerMat=new THREE.MeshStandardMaterial({color:0xfacc15, emissive:0x7a4f00, emissiveIntensity:.18});
+            const divider=new THREE.Mesh(new THREE.BoxGeometry(.12,.03,700),dividerMat); divider.position.set(0,.05,-245); this.scene.add(divider);
+            const dashMat=new THREE.MeshStandardMaterial({color:0xf8fafc, emissive:0x202020});
+            [-4,4].forEach(x=>{
+                for(let i=0;i<56;i++){
+                    const dash=new THREE.Mesh(new THREE.BoxGeometry(.10,.025,4.0),dashMat); dash.position.set(x,.055,15-i*13); this.scene.add(dash); this.laneMarkers.push(dash);
+                }
+            });
+        },
+
+        buildScenery(){
+            const trunkMat=new THREE.MeshStandardMaterial({color:0x5b4636});
+            const leafMat=new THREE.MeshStandardMaterial({color:0x2f855a, roughness:1});
+            for(let i=0;i<50;i++){
+                const side=i%2===0?-1:1;
+                const tree=new THREE.Group();
+                const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.16,.23,1.5,8),trunkMat); trunk.position.y=.7; tree.add(trunk);
+                const crown=new THREE.Mesh(new THREE.ConeGeometry(.85,1.9,8),leafMat); crown.position.y=2.0; tree.add(crown);
+                tree.position.set(side*(12+Math.random()*10),0, -20-i*12 - Math.random()*6); tree.scale.setScalar(.75+Math.random()*.6); this.scene.add(tree); this.roadside.push(tree);
+            }
+            const lampMat=new THREE.MeshStandardMaterial({color:0x9ca3af, metalness:.4, roughness:.5});
+            const lampGlow=new THREE.MeshStandardMaterial({color:0xfff4cc, emissive:0xffdb75, emissiveIntensity:2.4});
+            for(let i=0;i<12;i++){
+                const side=i%2?-1:1; const pole=new THREE.Group();
+                const stem=new THREE.Mesh(new THREE.CylinderGeometry(.06,.08,3.5,6),lampMat); stem.position.y=1.75; pole.add(stem);
+                const lamp=new THREE.Mesh(new THREE.SphereGeometry(.14,10,10),lampGlow); lamp.position.set(0,3.55,0); pole.add(lamp);
+                pole.position.set(side*11.2,0,-30-i*28); this.scene.add(pole); this.roadside.push(pole);
+            }
+        },
+
+        buildFinishGate(){
+            const group=new THREE.Group();
+            const mat=new THREE.MeshStandardMaterial({color:0xf8fafc, emissive:0x1b1b1b});
+            const red=new THREE.MeshStandardMaterial({color:0xef4444, emissive:0x3f1111, emissiveIntensity:.25});
+            [-7.5,7.5].forEach(x=>{ const post=new THREE.Mesh(new THREE.BoxGeometry(.45,5,.45),mat); post.position.set(x,2.5,0); group.add(post); });
+            const beam=new THREE.Mesh(new THREE.BoxGeometry(15.45,.55,.5),mat); beam.position.y=5; group.add(beam);
+            for(let i=0;i<14;i++){ const box=new THREE.Mesh(new THREE.BoxGeometry(1.1,.55,.52),i%2?red:mat); box.position.set(-7.15+i*1.1,4.98,.02); group.add(box); }
+            const flag=new THREE.Group();
+            const fw=new THREE.Mesh(new THREE.PlaneGeometry(2.6,1.6,1,1),new THREE.MeshStandardMaterial({color:0xffffff,side:THREE.DoubleSide})); fw.position.set(0,4.05,.1); flag.add(fw);
+            for(let y=0;y<2;y++) for(let x=0;x<4;x++){const q=new THREE.Mesh(new THREE.PlaneGeometry(.65,.8),new THREE.MeshBasicMaterial({color:(x+y)%2?0x111827:0xffffff,side:THREE.DoubleSide})); q.position.set(-.975+x*.65,4.05-.4+y*.8,.12); flag.add(q);}
+            group.add(flag); group.position.z=-this.finishDistance; this.finishGate=group; this.scene.add(group);
+        },
+
+        buildCar(color,isPlayer=false){
+            const g=new THREE.Group();
+            const bodyMat=new THREE.MeshStandardMaterial({color, metalness:.35, roughness:.32});
+            const dark=new THREE.MeshStandardMaterial({color:0x0f172a, metalness:.1, roughness:.5});
+            const glass=new THREE.MeshStandardMaterial({color:0x8bd8ff, transparent:true, opacity:.72, metalness:.15, roughness:.15});
+            const body=new THREE.Mesh(new THREE.BoxGeometry(1.85,.55,3.55),bodyMat); body.position.y=.55; g.add(body);
+            const hood=new THREE.Mesh(new THREE.BoxGeometry(1.62,.25,1.3),bodyMat); hood.position.set(0,.82,-.95); g.add(hood);
+            const cabin=new THREE.Mesh(new THREE.BoxGeometry(1.5,.72,1.55),glass); cabin.position.set(0,1.0,.35); g.add(cabin);
+            const roof=new THREE.Mesh(new THREE.BoxGeometry(1.28,.14,1.35),dark); roof.position.set(0,1.36,.35); g.add(roof);
+            const bumper=new THREE.Mesh(new THREE.BoxGeometry(1.9,.18,.22),dark); bumper.position.z=-1.82; bumper.position.y=.38; g.add(bumper);
+            const wheelGeo=new THREE.CylinderGeometry(.34,.34,.23,16);
+            const wheelMat=new THREE.MeshStandardMaterial({color:0x0b0f16, roughness:.95});
+            const positions=[[-.93,.34,-1.18],[.93,.34,-1.18],[-.93,.34,1.18],[.93,.34,1.18]];
+            positions.forEach((p,idx)=>{ const wg=new THREE.Group(); const w=new THREE.Mesh(wheelGeo,wheelMat); w.rotation.z=Math.PI/2; wg.add(w); wg.position.set(...p); g.add(wg); if(idx<2) this.frontWheels.push(wg); });
+            const lightMat=new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:2});
+            [-.55,.55].forEach(x=>{const l=new THREE.Mesh(new THREE.BoxGeometry(.32,.16,.08),lightMat); l.position.set(x,.67,-1.81); g.add(l);});
+            if(!isPlayer){
+                const tint=new THREE.MeshStandardMaterial({color:0xffffff,metalness:.15,roughness:.4});
+                const sign=new THREE.Mesh(new THREE.BoxGeometry(1.25,.12,.4),tint); sign.position.y=1.42; sign.position.z=.35; g.add(sign);
+            }
+            return g;
+        },
+
+        resetWorld(){
+            this.traffic.forEach(v=>this.scene.remove(v.obj));
+            this.traffic=[];
+            if(this.player){ this.player.position.set(this.playerX,0.48,0); this.player.rotation.set(0,0,0); }
+            if(this.finishGate){ this.finishGate.position.z=-this.finishDistance; }
+            if(this.laneMarkers.length) this.laneMarkers.forEach((m,i)=>m.position.z=15-(i%56)*13);
+        },
+
+        spawnTraffic(){
+            if(!this.scene) return;
+            const sameDir=Math.random()<.68;
+            const lane=sameDir ? (Math.random()<.5?0:1) : (Math.random()<.5?2:3);
+            const x=this.laneCenters[lane];
+            const type=Math.random();
+            let color=0xef4444;
+            if(type<.2) color=0xf59e0b; else if(type<.4) color=0x22c55e; else if(type<.6) color=0x8b5cf6; else if(type<.8) color=0xf8fafc;
+            const obj=this.buildCar(color,false);
+            obj.scale.setScalar(type<.16?1.15:type<.3?.9:1);
+            obj.position.set(x,.48,-150-Math.random()*110);
+            obj.rotation.y=sameDir?Math.PI:0;
+            this.scene.add(obj);
+            this.traffic.push({obj,lane,x,sameDir,speed:0.55+Math.random()*.85,hit:false,passed:false});
+        },
+
+        start(){
+            if(this.running) return;
+            if(typeof THREE==='undefined'){ alert('3D engine could not load. Please open this page with internet access.'); return; }
+            this.ensureScene();
+            this.prepareRuntime();
+            this.running=true; this.pausedForLife=false; this.lastTs=performance.now();
+            document.getElementById('car-start-panel')?.classList.remove('active');
+            document.getElementById('car-life-panel')?.classList.remove('active');
+            this.requestLandscape();
+            this.loop(this.lastTs);
+        },
+
+        prepareRuntime(){
+            this.lives=3; this.speed=0; this.distance=0; this.score=0; this.level=1; this.targetSpeed=42; this.maxSpeed=96; this.playerX=-2; this.yaw=0; this.steer=0; this.nearMisses=0; this.spawnClock=0; this.resetWorld(); this.updateHud();
+        },
+
+        requestLandscape(){
+            try { if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen({navigationUI:'hide'}).catch(()=>{}); } catch(e){}
+            try { if(screen.orientation?.lock) screen.orientation.lock('landscape').catch(()=>{}); } catch(e){}
+        },
+
+        bindControls(){
+            document.querySelectorAll('[data-car-control]').forEach(btn=>{
+                const k=btn.dataset.carControl;
+                const on=ev=>{ev.preventDefault(); this.keys[k]=true; btn.classList.add('active');};
+                const off=ev=>{ev.preventDefault(); this.keys[k]=false; btn.classList.remove('active');};
+                btn.addEventListener('pointerdown',on);
+                ['pointerup','pointercancel','pointerleave'].forEach(t=>btn.addEventListener(t,off));
+            });
+            window.addEventListener('keydown',e=>{
+                const map={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'accelerate',ArrowDown:'brake',a:'left',d:'right',w:'accelerate',s:'brake'};
+                const k=map[e.key]; if(k){e.preventDefault();this.keys[k]=true;}
+            });
+            window.addEventListener('keyup',e=>{
+                const map={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'accelerate',ArrowDown:'brake',a:'left',d:'right',w:'accelerate',s:'brake'};
+                const k=map[e.key]; if(k)this.keys[k]=false;
+            });
+        },
+
+        update(dt){
+            const accel=this.keys.accelerate?25:0;
+            const brake=this.keys.brake?48:0;
+            const desiredMax=this.maxSpeed + (this.level-1)*7;
+            if(accel>0) this.speed += accel*dt;
+            else this.speed -= 5.5*dt;
+            if(brake>0) this.speed -= brake*dt;
+            const cruise=this.targetSpeed + (this.keys.accelerate?22:0) + (this.level-1)*4;
+            if(!this.keys.accelerate && this.speed<cruise) this.speed += 4.5*dt;
+            this.speed=THREE.MathUtils.clamp(this.speed,0,desiredMax);
+
+            const steerInput=(this.keys.left?-1:0)+(this.keys.right?1:0);
+            const steerTarget=steerInput;
+            this.steer=THREE.MathUtils.lerp(this.steer,steerTarget,Math.min(1,dt*9));
+            const steerStrength=(0.22 + this.speed/160)*dt;
+            this.playerX += this.steer * steerStrength * 28;
+            this.playerX=THREE.MathUtils.clamp(this.playerX,-8.1,8.1);
+            this.yaw=THREE.MathUtils.lerp(this.yaw,-this.steer*0.16,Math.min(1,dt*8));
+            this.player.position.x=this.playerX; this.player.rotation.y=this.yaw;
+            this.frontWheels.forEach(w=>w.rotation.y=this.steer*0.45);
+
+            const metersPerSecond=this.speed*0.44;
+            this.distance += metersPerSecond*dt;
+            this.score=Math.floor(this.distance*1.5 + this.nearMisses*20);
+            this.level=Math.min(8,1+Math.floor(this.distance/500));
+
+            const worldDelta=metersPerSecond*dt*1.45;
+            this.laneMarkers.forEach(m=>{m.position.z+=worldDelta; if(m.position.z>22)m.position.z-=728;});
+            this.roadside.forEach(o=>{o.position.z+=worldDelta; if(o.position.z>34)o.position.z-=650;});
+            this.traffic.forEach(v=>{
+                const relative=v.sameDir ? (metersPerSecond - v.speed*16) : (metersPerSecond + v.speed*20);
+                v.obj.position.z += relative*dt;
+                if(v.sameDir) v.obj.rotation.y=Math.PI;
+                if(v.obj.position.z>18 && !v.passed){v.passed=true; if(Math.abs(v.obj.position.x-this.playerX)<1.1){this.nearMisses++;}}
+            });
+            this.traffic=this.traffic.filter(v=>{if(v.obj.position.z>35 || v.obj.position.z<-260){this.scene.remove(v.obj);return false;}return true;});
+
+            this.spawnClock -= dt;
+            const spawnEvery=Math.max(.55,1.35-this.level*.07);
+            if(this.spawnClock<=0){this.spawnClock=spawnEvery; if(this.traffic.length<10)this.spawnTraffic();}
+
+            this.finishGate.position.z += worldDelta;
+            if(this.finishGate.position.z>=-2){ this.win(); return; }
+
+            if(Math.abs(this.playerX)>8.0){ this.crash('Road edge'); return; }
+            for(const v of this.traffic){
+                if(v.hit) continue;
+                if(Math.abs(v.obj.position.x-this.playerX)<1.45 && Math.abs(v.obj.position.z)<2.3){v.hit=true; this.crash('Traffic collision'); return;}
+            }
+            this.updateHud();
+            this.camera.position.x=THREE.MathUtils.lerp(this.camera.position.x,this.playerX*0.26,Math.min(1,dt*3.5));
+            this.camera.lookAt(this.playerX*0.1,1.0,-32);
+        },
+
+        crash(reason){
+            if(!this.running) return;
+            this.lives--;
+            this.running=false;
+            this.pausedForLife=this.lives>0;
+            this.updateHud();
+            if(this.lives<=0){
+                this.showGameOver(reason);
+            } else {
+                document.getElementById('car-life-title').textContent=reason==='Road edge'?'Off Road!':'Crash!';
+                document.getElementById('car-life-text').textContent=`You have ${this.lives} ${this.lives===1?'life':'lives'} left.`;
+                document.getElementById('car-life-panel')?.classList.add('active');
+                this.speed=0;
+                this.playerX=-2;
+                this.player.position.x=this.playerX;
+            }
+        },
+
+        restartAfterLife(){
+            if(this.lives<=0) return;
+            this.pausedForLife=false;
+            document.getElementById('car-life-panel')?.classList.remove('active');
+            this.traffic.forEach(v=>this.scene.remove(v.obj)); this.traffic=[]; this.playerX=-2; this.player.position.x=-2; this.speed=18; this.spawnClock=.2;
+            this.running=true; this.lastTs=performance.now(); this.loop(this.lastTs);
+        },
+
+        win(){
+            if(!this.running) return;
+            this.running=false; this.speed=0; this.distance=this.finishDistance; this.score=Math.floor(this.distance*1.5 + this.nearMisses*20); this.updateHud();
+            app.showModal('🏁 Destination Reached!',{'Distance':`${this.finishDistance} m`,'Score':this.score,'Level':this.level,'Lives Left':this.lives},()=>this.start());
+        },
+
+        showGameOver(reason){
+            this.running=false; this.speed=0;
+            app.showModal('Game Over',{'Reason':reason,'Distance':`${Math.floor(this.distance)} m`,'Score':this.score,'Level Reached':this.level},()=>this.start());
+        },
+
+        updateHud(){
+            const ids={speed:Math.round(this.speed),distance:Math.floor(this.distance),score:this.score,level:this.level,finish:Math.max(0,Math.floor(this.finishDistance-this.distance))};
+            for(const [k,v] of Object.entries(ids)){const el=document.getElementById('car-'+k);if(el)el.textContent=v;}
+            const lives=document.getElementById('car-lives'); if(lives)lives.textContent='❤️'.repeat(Math.max(0,this.lives));
+        },
+
+        loop(ts){
+            if(!this.renderer || !this.scene) return;
+            if(!this.lastTs) this.lastTs=ts;
+            const dt=Math.min(.045,Math.max(.008,(ts-this.lastTs)/1000)); this.lastTs=ts;
+            if(this.running) this.update(dt);
+            this.renderer.render(this.scene,this.camera);
+            if(this.running) this.animationId=requestAnimationFrame(t=>this.loop(t));
+        },
+
+        stop(){
+            this.running=false; this.pausedForLife=false;
+            if(this.animationId){cancelAnimationFrame(this.animationId);this.animationId=null;}
+            Object.keys(this.keys).forEach(k=>this.keys[k]=false);
+            document.getElementById('car-life-panel')?.classList.remove('active');
+        },
+
+        quit(){
+            this.stop();
+            try{if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});}catch(e){}
+            app.goHome();
+        }
+    };
+
+
+    /* ================= GAME 7: BURROW BASH ================= */
+    const burrowGame = {
+        HOLE_COUNT: 9,
+        GAME_LENGTH: 30,
+        holes: [],
+        score: 0,
+        best: Number(localStorage.getItem('burrowBashBest') || 0),
+        timeLeft: 30,
+        running: false,
+        popTimer: null,
+        countdownTimer: null,
+        activeHole: -1,
+        initialized: false,
+        moleSVG: `<svg viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="50" cy="76" rx="34" ry="8" fill="rgba(0,0,0,0.35)"/>
+          <path d="M20 55 C20 20 80 20 80 55 C80 72 65 78 50 78 C35 78 20 72 20 55 Z" fill="#8B6748"/>
+          <path d="M30 58 C30 34 70 34 70 58 C70 70 60 74 50 74 C40 74 30 70 30 58 Z" fill="#D9B48C"/>
+          <ellipse cx="34" cy="30" rx="9" ry="11" fill="#8B6748"/><ellipse cx="66" cy="30" rx="9" ry="11" fill="#8B6748"/>
+          <ellipse cx="34" cy="31" rx="4.5" ry="5.5" fill="#5C4130"/><ellipse cx="66" cy="31" rx="4.5" ry="5.5" fill="#5C4130"/>
+          <circle cx="40" cy="44" r="5" fill="#241A12"/><circle cx="60" cy="44" r="5" fill="#241A12"/>
+          <circle cx="41.5" cy="42.5" r="1.6" fill="#fff"/><circle cx="61.5" cy="42.5" r="1.6" fill="#fff"/>
+          <ellipse cx="50" cy="54" rx="6" ry="4.5" fill="#4A3524"/>
+          <path d="M44 60 Q50 65 56 60" stroke="#4A3524" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        </svg>`,
+        prepare(){
+            this.stop();
+            this.score=0; this.timeLeft=this.GAME_LENGTH; this.running=false; this.activeHole=-1;
+            this.best=Number(localStorage.getItem('burrowBashBest') || 0);
+            this.buildGrid(); this.updateUI();
+            const btn=document.getElementById('burrow-play-btn');
+            if(btn){btn.disabled=false;btn.textContent='Start game';}
+            const msg=document.getElementById('burrow-end-msg');
+            if(msg) msg.textContent='';
+        },
+        buildGrid(){
+            const grid=document.getElementById('burrow-grid'); if(!grid) return;
+            grid.innerHTML=''; this.holes=[];
+            for(let i=0;i<this.HOLE_COUNT;i++){
+                const hole=document.createElement('div');
+                hole.className='burrow-hole';
+                hole.innerHTML=`<div class="burrow-mole">${this.moleSVG}</div>`;
+                hole.addEventListener('click',()=>this.whack(i));
+                grid.appendChild(hole); this.holes.push(hole);
+            }
+            this.initialized=true;
+        },
+        randomInt(max){return Math.floor(Math.random()*max);},
+        popMole(){
+            if(!this.running || !this.holes.length) return;
+            if(this.activeHole!==-1 && this.holes[this.activeHole]) this.holes[this.activeHole].classList.remove('up','whacked');
+            let next=this.randomInt(this.HOLE_COUNT);
+            if(this.HOLE_COUNT>1) while(next===this.activeHole) next=this.randomInt(this.HOLE_COUNT);
+            this.activeHole=next; this.holes[next].classList.add('up');
+            const speed=Math.max(360,950-this.score*22);
+            this.popTimer=setTimeout(()=>this.popMole(),speed);
+        },
+        whack(index){
+            if(!this.running || index!==this.activeHole) return;
+            if(!this.holes[index] || this.holes[index].classList.contains('whacked')) return;
+            this.holes[index].classList.add('whacked');
+            this.holes[index].classList.remove('up');
+            this.score++; this.updateUI();
+        },
+        tick(){
+            if(!this.running) return;
+            this.timeLeft--; this.updateUI();
+            if(this.timeLeft<=0) this.endGame();
+        },
+        start(){
+            this.stop(); this.running=true; this.score=0; this.timeLeft=this.GAME_LENGTH; this.activeHole=-1;
+            if(!this.initialized) this.buildGrid();
+            this.holes.forEach(h=>h.classList.remove('up','whacked'));
+            const msg=document.getElementById('burrow-end-msg'); if(msg) msg.textContent='';
+            const btn=document.getElementById('burrow-play-btn'); if(btn){btn.disabled=true;btn.textContent='Playing…';}
+            this.updateUI(); this.popMole();
+            this.countdownTimer=setInterval(()=>this.tick(),1000);
+        },
+        stop(){
+            this.running=false;
+            if(this.popTimer){clearTimeout(this.popTimer);this.popTimer=null;}
+            if(this.countdownTimer){clearInterval(this.countdownTimer);this.countdownTimer=null;}
+            if(this.holes.length) this.holes.forEach(h=>h.classList.remove('up','whacked'));
+            this.activeHole=-1;
+        },
+        quit(){this.stop();app.goHome();},
+        updateUI(){
+            const s=document.getElementById('burrow-score'); const h=document.getElementById('burrow-header-score');
+            const t=document.getElementById('burrow-time'); const b=document.getElementById('burrow-best');
+            if(s)s.textContent=this.score; if(h)h.textContent=this.score; if(t)t.textContent=this.timeLeft; if(b)b.textContent=this.best;
+        },
+        endGame(){
+            this.running=false;
+            if(this.popTimer)clearTimeout(this.popTimer); if(this.countdownTimer)clearInterval(this.countdownTimer);
+            this.popTimer=null; this.countdownTimer=null;
+            this.holes.forEach(h=>h.classList.remove('up','whacked')); this.activeHole=-1;
+            const msg=document.getElementById('burrow-end-msg');
+            if(this.score>this.best){
+                this.best=this.score; localStorage.setItem('burrowBashBest',String(this.best));
+                if(msg)msg.textContent=`New best — ${this.score} moles!`;
+            }else{
+                if(msg)msg.textContent=`Round over — ${this.score} moles whacked`;
+            }
+            const btn=document.getElementById('burrow-play-btn'); if(btn){btn.disabled=false;btn.textContent='Play again';}
+            this.updateUI();
+        }
+    };
+    document.getElementById('burrow-play-btn')?.addEventListener('click',()=>burrowGame.start());
+
 </script>
 
 </body>
