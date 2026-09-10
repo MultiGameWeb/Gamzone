@@ -491,211 +491,7 @@
             width: 100%;
         }
 
-        const twofoldGame = {
-        board: Array(16).fill(0),
-        score: 0,
-        best: Number(localStorage.getItem('twofoldBest') || 0),
-        won: false,
-        gameOver: false,
-        running: false,
-        touchStartX: 0,
-        touchStartY: 0,
-        initialized: false,
-        animNew: new Set(),
-        animMerged: new Set(),
-
-        prepare() {
-            this.stop();
-            this.best = Number(localStorage.getItem('twofoldBest') || 0);
-            this.bindOnce();
-            this.newGame();
-        },
-
-        bindOnce() {
-            if (this.initialized) return;
-            const board = document.getElementById('twofold-board');
-            const newBtn = document.getElementById('twofold-new');
-            const overlayNew = document.getElementById('twofold-overlay-new');
-            const cont = document.getElementById('twofold-continue');
-            if (!board) return;
-            board.addEventListener('touchstart', (e) => {
-                if (!this.running || !e.touches.length) return;
-                this.touchStartX = e.touches[0].clientX;
-                this.touchStartY = e.touches[0].clientY;
-            }, {passive:true});
-            board.addEventListener('touchend', (e) => {
-                if (!this.running || !e.changedTouches.length) return;
-                const dx = e.changedTouches[0].clientX - this.touchStartX;
-                const dy = e.changedTouches[0].clientY - this.touchStartY;
-                if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
-                if (Math.abs(dx) > Math.abs(dy)) this.move(dx > 0 ? 'right' : 'left');
-                else this.move(dy > 0 ? 'down' : 'up');
-                e.preventDefault();
-            }, {passive:false});
-            newBtn?.addEventListener('click', () => this.newGame());
-            overlayNew?.addEventListener('click', () => this.newGame());
-            cont?.addEventListener('click', () => { this.won = true; this.hideOverlay(); this.running = !this.gameOver; });
-            window.addEventListener('keydown', (e) => {
-                if (app.currentScreen !== 'twofold' || !this.running) return;
-                const map = {ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'};
-                const dir = map[e.key];
-                if (!dir) return;
-                e.preventDefault();
-                this.move(dir);
-            });
-            this.initialized = true;
-        },
-
-        newGame() {
-            this.board = Array(16).fill(0);
-            this.score = 0;
-            this.won = false;
-            this.gameOver = false;
-            this.running = true;
-            this.hideOverlay();
-            this.animNew = new Set();
-            this.animMerged = new Set();
-            this.spawnRandom();
-            this.animNew.add(this.board.findIndex(v => v === 2));
-            this.spawnRandom();
-            const firstFour = this.board.findIndex((v,i) => v === 4 && i !== [...this.animNew][0]);
-            if(firstFour >= 0) this.animNew.add(firstFour);
-            this.updateBest();
-            this.render(true);
-        },
-
-        stop() { this.running = false; },
-        quit() { this.stop(); app.goHome(); },
-
-        emptyIndexes() { const out=[]; this.board.forEach((v,i)=>{if(!v)out.push(i)}); return out; },
-        spawnRandom() {
-            const empty=this.emptyIndexes();
-            if(!empty.length) return false;
-            const idx=empty[Math.floor(Math.random()*empty.length)];
-            this.board[idx]=Math.random()<0.9?2:4;
-            return true;
-        },
-        updateBest() {
-            if(this.score>this.best){ this.best=this.score; localStorage.setItem('twofoldBest',String(this.best)); }
-            const s=document.getElementById('twofold-score'); if(s)s.textContent=this.score;
-            const b=document.getElementById('twofold-best'); if(b)b.textContent=this.best;
-            const hb=document.getElementById('twofold-header-best'); if(hb)hb.textContent=this.best;
-        },
-
-        slideLine(line) {
-            const vals=line.filter(Boolean);
-            const merged=[];
-            for(let i=0;i<vals.length;i++){
-                if(vals[i]===vals[i+1]){ const v=vals[i]*2; merged.push(v); this.score+=v; i++; }
-                else merged.push(vals[i]);
-            }
-            while(merged.length<4) merged.push(0);
-            return merged;
-        },
-
-        move(dir) {
-            if(!this.running || this.gameOver) return;
-            const old=this.board.slice();
-            const scoreBefore=this.score;
-            const next=Array(16).fill(0);
-            const lines=[];
-            for(let i=0;i<4;i++){
-                let line=[];
-                for(let j=0;j<4;j++){
-                    const idx = dir==='left' ? i*4+j : dir==='right' ? i*4+(3-j) : dir==='up' ? j*4+i : (3-j)*4+i;
-                    line.push(this.board[idx]);
-                }
-                lines.push(this.slideLine(line));
-            }
-            for(let i=0;i<4;i++) for(let j=0;j<4;j++){
-                const lineVal=lines[i][j];
-                const idx = dir==='left' ? i*4+j : dir==='right' ? i*4+(3-j) : dir==='up' ? j*4+i : (3-j)*4+i;
-                next[idx]=lineVal;
-            }
-            const changed=next.some((v,i)=>v!==old[i]);
-            if(!changed) return;
-            this.board=next;
-            this.animNew = new Set();
-            for(let i=0;i<16;i++) if(old[i]===0 && next[i]!==0) this.animNew.add(i);
-            const gained = this.score > scoreBefore;
-            this.animMerged = new Set();
-            if(gained){
-                for(let i=0;i<16;i++) if(next[i]>=4 && next[i]!==old[i]) this.animMerged.add(i);
-            }
-            const beforeSpawn = this.board.slice();
-            const emptyBeforeSpawn = beforeSpawn.map((v,i)=>v===0?i:-1).filter(i=>i>=0);
-            this.spawnRandom();
-            const spawned = this.board.findIndex((v,i)=>beforeSpawn[i]===0 && v!==0);
-            if(spawned>=0) this.animNew.add(spawned);
-            this.updateBest();
-            this.render(true);
-            if(!this.won && this.board.some(v=>v>=2048)){
-                this.won=true;
-                this.running=false;
-                this.showOverlay(true);
-                return;
-            }
-            if(!this.canMove()){
-                this.gameOver=true;
-                this.running=false;
-                this.showOverlay(false);
-            }
-        },
-
-        canMove(){
-            if(this.board.some(v=>!v)) return true;
-            for(let r=0;r<4;r++) for(let c=0;c<4;c++){
-                const i=r*4+c;
-                if(c<3 && this.board[i]===this.board[i+1]) return true;
-                if(r<3 && this.board[i]===this.board[i+4]) return true;
-            }
-            return false;
-        },
-
-        tileClass(v){ if(v<=0)return ''; if(v<=2048)return 'twofold-v'+v; return 'twofold-vbig'; },
-        render(animate=false){
-            const board=document.getElementById('twofold-board'); if(!board)return;
-            board.innerHTML='';
-            this.board.forEach((v,i)=>{
-                const cell=document.createElement('div');
-                let cls='twofold-cell '+this.tileClass(v);
-                if(animate && this.animNew.has(i)) cls += ' new';
-                if(animate && this.animMerged.has(i)) cls += ' merged';
-                cell.className=cls;
-                cell.setAttribute('role','gridcell');
-                cell.setAttribute('aria-label',v?String(v):'empty');
-                if(v){ const span=document.createElement('span'); span.textContent=v; cell.appendChild(span); }
-                board.appendChild(cell);
-            });
-            if(animate){
-                setTimeout(()=>{ this.animNew.clear(); this.animMerged.clear(); }, 220);
-            }
-        },
-        showOverlay(won){
-            const ov=document.getElementById('twofold-overlay');
-            const title=document.getElementById('twofold-overlay-title');
-            const text=document.getElementById('twofold-overlay-text');
-            const cont=document.getElementById('twofold-continue');
-            const actions=document.getElementById('twofold-overlay-actions');
-            if(!ov)return;
-            ov.classList.add('active');
-            if(won){
-                title.textContent='You reached 2048!';
-                text.textContent='Nice! Keep playing to build an even bigger tile, or start a fresh board.';
-                cont.style.display='inline-flex';
-                actions.classList.remove('one');
-            }else{
-                title.textContent='No moves left';
-                text.textContent=`Final score: ${this.score}. Start a new game and try again.`;
-                cont.style.display='none';
-                actions.classList.add('one');
-            }
-        },
-        hideOverlay(){ document.getElementById('twofold-overlay')?.classList.remove('active'); }
-    };
-
-
-    /* ================= GAME 1: FLASH CALCULATION ================= */
+        /* ================= GAME 1: FLASH CALCULATION ================= */
         .flash-container {
             display: flex;
             flex-direction: column;
@@ -783,19 +579,20 @@
         }
         .connect-board {
             position: relative;
-            flex: 1;
+            width: min(100%, 390px);
+            aspect-ratio: 1 / 1;
+            margin: 0 auto 12px;
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
-            margin-bottom: 12px;
             overflow: hidden;
-            aspect-ratio: 1/1;
-            max-height: 400px;
+            flex: 0 0 auto;
+            touch-action: manipulation;
         }
         .connect-number-node {
             position: absolute;
-            width: 40px;
-            height: 40px;
+            width: var(--connect-node-size, 36px);
+            height: var(--connect-node-size, 36px);
             border-radius: 50%;
             background: var(--bg-secondary);
             border: 2px solid var(--border-color);
@@ -804,8 +601,10 @@
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 14px;
+            font-size: clamp(11px, 3.1vw, 14px);
             cursor: pointer;
+            z-index: 2;
+            z-index: 2;
             transform: translate(-50%, -50%);
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             transition: transform 0.1s;
@@ -1045,7 +844,7 @@
     .twofold-scorebox strong { display:block; font:800 19px/1.2 'Space Grotesk',sans-serif; color:#eaffff; }
     .twofold-new { width:100%; padding:10px 14px; margin:0 0 10px; font-size:13px; }
     .twofold-board-shell { position:relative; padding:10px; background:linear-gradient(145deg,#101a3a,#0b1330); border:1px solid rgba(45,212,191,.22); border-radius:18px; box-shadow:0 18px 40px rgba(0,0,0,.32); }
-    .twofold-board { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; aspect-ratio:1; background:#080e25; padding:9px; border-radius:12px; }
+    .twofold-board { touch-action:none; display:grid; grid-template-columns:repeat(4,1fr); gap:9px; aspect-ratio:1; background:#080e25; padding:9px; border-radius:12px; }
     .twofold-cell { position:relative; display:grid; place-items:center; border-radius:10px; background:#111a3a; color:rgba(236,255,252,.12); font-family:'Space Grotesk',sans-serif; font-weight:800; font-size:clamp(22px,8vw,38px); box-shadow:inset 0 0 0 1px rgba(255,255,255,.025); }
     .twofold-cell span { position:relative; z-index:1; }
     .twofold-cell.new::after { content:''; position:absolute; inset:12%; border-radius:9px; animation:twofoldPop .18s ease-out; }
@@ -1091,8 +890,112 @@
         @media(max-height:520px) and (orientation:landscape){.flappy-stage{min-height:250px}.flappy-hint{margin-top:4px}}
         @media(prefers-reduced-motion:reduce){.flappy-stage{scroll-behavior:auto}}
 
-    </style>
+
+
+        /* ================= PWA / MOBILE SUPPORT ================= */
+        html { min-height: 100%; background: var(--bg-primary); }
+        body {
+            min-height: 100svh;
+            padding-top: env(safe-area-inset-top);
+            padding-right: env(safe-area-inset-right);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+        }
+        button, a { -webkit-tap-highlight-color: transparent; }
+        button:focus-visible, a:focus-visible {
+            outline: 3px solid var(--accent-cyan);
+            outline-offset: 3px;
+        }
+        .install-bar { gap: 8px; flex-wrap: wrap; }
+        .btn-install { display: inline-flex; }
+        .install-help {
+            display:none; width:100%; max-width:440px; margin:4px auto 0;
+            font-size:11px; line-height:1.4; text-align:center; color:var(--text-muted);
+        }
+        .install-help.show { display:block; }
+        .install-guide-backdrop {
+            position:fixed; inset:0; z-index:220; display:none; align-items:center; justify-content:center;
+            padding:20px; background:rgba(4,8,18,.86); backdrop-filter:blur(10px);
+        }
+        .install-guide-backdrop.active { display:flex; }
+        .install-guide-card {
+            width:min(380px,100%); padding:20px; border-radius:18px; background:var(--bg-secondary);
+            border:1px solid var(--border-color); box-shadow:var(--shadow); text-align:left;
+        }
+        .install-guide-card h3 { color:var(--accent-cyan); margin-bottom:8px; font-size:19px; }
+        .install-guide-card p { color:var(--text-muted); font-size:12px; line-height:1.5; margin-bottom:10px; }
+        .install-guide-card ol { margin:0 0 14px 20px; color:#d7e6f2; font-size:12px; line-height:1.6; }
+        .install-guide-actions { display:flex; gap:8px; }
+        .install-guide-actions button { flex:1; padding:10px; }
+        @media (display-mode: standalone), (display-mode: fullscreen) {
+            .install-bar { display:none; }
+        }
+        @media (max-width:560px) {
+            .app-container { padding-left:12px; padding-right:12px; }
+            .game-grid { gap:10px; }
+            .game-card { padding:12px; }
+            .game-card h3 { font-size:14px; }
+            .btn-install { min-height:44px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            * { scroll-behavior:auto !important; }
+        }
+
+
+        /* Mobile game viewport tuning */
+        .twofold-wrap, .flappy-wrap { box-sizing: border-box; }
+        @media (max-width: 560px) {
+            .game-header { margin-bottom: 8px; padding-bottom: 8px; }
+            .game-title-bar { font-size: 14px; }
+            .hud-stats { gap: 6px; font-size: 11px; }
+            .twofold-wrap { width: min(100%, 390px); padding-top: 0; }
+            .twofold-board-shell { width: min(100%, 380px); margin: 0 auto; }
+            .twofold-board { width: 100%; }
+            .connect-container { width: 100%; }
+            .connect-board { width: min(100%, 390px); }
+        }
+        @media (max-width: 380px) {
+            .twofold-top { align-items: center; }
+            .twofold-brand h2 { font-size: 25px; }
+            .twofold-brand p { font-size: 10px; }
+            .twofold-scorebox { min-width: 62px; padding: 6px 7px; }
+            .twofold-scorebox strong { font-size: 17px; }
+            .twofold-board { gap: 6px; padding: 7px; }
+            .twofold-cell { font-size: clamp(18px, 7vw, 30px); }
+            .connect-number-node { font-size: 11px; }
+        }
+
+    
+        /* Final mobile viewport tuning */
+        .twofold-board-shell, .connect-board { -webkit-tap-highlight-color: transparent; }
+        @media (max-width: 560px) {
+            .game-header { margin-bottom: 8px; padding-bottom: 8px; }
+            .game-title-bar { font-size: 14px; }
+            .hud-stats { gap: 6px; font-size: 11px; }
+            .twofold-wrap { width: min(100%, 390px); }
+            .twofold-board-shell { width: min(100%, 380px); margin-inline: auto; }
+            .connect-container { width: 100%; }
+            .connect-board { width: min(100%, 390px); }
+        }
+        @media (max-width: 380px) {
+            .twofold-brand h2 { font-size: 25px; }
+            .twofold-brand p { font-size: 10px; }
+            .twofold-scorebox { min-width: 62px; padding: 6px 7px; }
+            .twofold-scorebox strong { font-size: 17px; }
+            .twofold-board { gap: 6px; padding: 7px; }
+            .twofold-cell { font-size: clamp(18px, 7vw, 30px); }
+            .connect-number-node { font-size: 11px; }
+        }
+</style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <meta name="theme-color" content="#070b19">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Brain Games">
+    <link rel="manifest" href="manifest.webmanifest">
+
 </head>
 <body>
 
@@ -1109,9 +1012,10 @@
             <div class="subtitle">Quick games for calculation, focus, memory, reflexes and logic.</div>
             
             <div class="install-bar">
-                <button id="btn-install" class="btn-3d teal btn-install">
-                    <span>📲</span> Install App
+                <button id="btn-install" class="btn-3d teal btn-install" type="button">
+                    <span>📲</span> Install App / Add to Home Screen
                 </button>
+                <div id="install-help" class="install-help" aria-live="polite"></div>
             </div>
         </header>
 
@@ -1617,27 +1521,95 @@
             <button class="btn-3d btn-modal" onclick="app.closeModalAndHome()">Back Home</button>
         </div>
     </div>
+    <!-- ================= INSTALL GUIDE MODAL ================= -->
+    <div id="install-guide" class="install-guide-backdrop" role="dialog" aria-modal="true" aria-labelledby="install-guide-title">
+        <div class="install-guide-card">
+            <h3 id="install-guide-title">📲 Install Brain Games</h3>
+            <p id="install-guide-copy">Install the app for a faster, app-like experience and easier access from your home screen.</p>
+            <ol id="install-guide-steps">
+                <li>Open this page in your browser.</li>
+                <li>Use the browser menu and choose <strong>Add to Home Screen</strong> or <strong>Install app</strong>.</li>
+                <li>Launch Brain Games from your home screen.</li>
+            </ol>
+            <div class="install-guide-actions">
+                <button id="install-guide-close" class="btn-3d">Close</button>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
     /* ================= APP CORE & PWA INSTALL LOGIC ================= */
     let deferredPrompt = null;
+
+    const pwa = {
+        init() {
+            const btn = document.getElementById('btn-install');
+            const help = document.getElementById('install-help');
+            const guide = document.getElementById('install-guide');
+            const close = document.getElementById('install-guide-close');
+
+            const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            if (standalone && btn) btn.style.display = 'none';
+
+            if (btn) {
+                btn.addEventListener('click', async () => {
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        try {
+                            const { outcome } = await deferredPrompt.userChoice;
+                            if (outcome === 'accepted') btn.style.display = 'none';
+                        } catch (_) {}
+                        deferredPrompt = null;
+                        return;
+                    }
+                    this.showInstallGuide();
+                });
+            }
+            if (close) close.addEventListener('click', () => this.hideInstallGuide());
+            if (guide) guide.addEventListener('click', (e) => { if (e.target === guide) this.hideInstallGuide(); });
+
+            const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            if (!standalone && ios && help) {
+                help.textContent = 'On iPhone/iPad: tap Share → Add to Home Screen.';
+                help.classList.add('show');
+            }
+        },
+        showInstallGuide() {
+            const guide = document.getElementById('install-guide');
+            const copy = document.getElementById('install-guide-copy');
+            const steps = document.getElementById('install-guide-steps');
+            const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            if (ios) {
+                copy.textContent = 'On iPhone/iPad, Safari uses Add to Home Screen for web apps.';
+                steps.innerHTML = '<li>Open Brain Games in Safari.</li><li>Tap the <strong>Share</strong> button.</li><li>Tap <strong>Add to Home Screen</strong>, then Add.</li>';
+            } else {
+                copy.textContent = 'Your browser did not offer the automatic install prompt, so use the browser menu instead.';
+                steps.innerHTML = '<li>Open this page in Chrome, Edge, or another supported browser.</li><li>Open the browser menu and choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li><li>Confirm the install.</li>';
+            }
+            guide?.classList.add('active');
+        },
+        hideInstallGuide() { document.getElementById('install-guide')?.classList.remove('active'); }
+    };
+
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        const installBtn = document.getElementById('btn-install');
-        if (installBtn) {
-            installBtn.style.display = 'inline-flex';
-            installBtn.onclick = async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome === 'accepted') {
-                        installBtn.style.display = 'none';
-                    }
-                    deferredPrompt = null;
-                }
-            };
+        const btn = document.getElementById('btn-install');
+        if (btn) btn.style.display = 'inline-flex';
+    });
+
+    window.addEventListener('appinstalled', () => {
+        deferredPrompt = null;
+        const btn = document.getElementById('btn-install');
+        if (btn) btn.style.display = 'none';
+    });
+
+    window.addEventListener('load', () => {
+        pwa.init();
+        if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+            navigator.serviceWorker.register('./sw.js').catch(() => {});
         }
     });
 
@@ -1721,6 +1693,200 @@
         }
     };
 
+
+    const twofoldGame = {
+    board: Array(16).fill(0),
+    score: 0,
+    best: Number(localStorage.getItem('twofoldBest') || 0),
+    won: false,
+    gameOver: false,
+    running: false,
+    touchStartX: 0,
+    touchStartY: 0,
+    initialized: false,
+    animNew: new Set(),
+    animMerged: new Set(),
+     prepare() {
+        this.stop();
+        this.best = Number(localStorage.getItem('twofoldBest') || 0);
+        this.bindOnce();
+        this.newGame();
+    },
+     bindOnce() {
+        if (this.initialized) return;
+        const board = document.getElementById('twofold-board');
+        const newBtn = document.getElementById('twofold-new');
+        const overlayNew = document.getElementById('twofold-overlay-new');
+        const cont = document.getElementById('twofold-continue');
+        if (!board) return;
+        board.addEventListener('touchstart', (e) => {
+            if (!this.running || !e.touches.length) return;
+            this.touchStartX = e.touches[0].clientX;
+            this.touchStartY = e.touches[0].clientY;
+        }, {passive:true});
+        board.addEventListener('touchend', (e) => {
+            if (!this.running || !e.changedTouches.length) return;
+            const dx = e.changedTouches[0].clientX - this.touchStartX;
+            const dy = e.changedTouches[0].clientY - this.touchStartY;
+            if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+            if (Math.abs(dx) > Math.abs(dy)) this.move(dx > 0 ? 'right' : 'left');
+            else this.move(dy > 0 ? 'down' : 'up');
+            e.preventDefault();
+        }, {passive:false});
+        newBtn?.addEventListener('click', () => this.newGame());
+        overlayNew?.addEventListener('click', () => this.newGame());
+        cont?.addEventListener('click', () => { this.won = true; this.hideOverlay(); this.running = !this.gameOver; });
+        window.addEventListener('keydown', (e) => {
+            if (app.currentScreen !== 'twofold' || !this.running) return;
+            const map = {ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'};
+            const dir = map[e.key];
+            if (!dir) return;
+            e.preventDefault();
+            this.move(dir);
+        });
+        this.initialized = true;
+    },
+     newGame() {
+        this.board = Array(16).fill(0);
+        this.score = 0;
+        this.won = false;
+        this.gameOver = false;
+        this.running = true;
+        this.hideOverlay();
+        this.animNew = new Set();
+        this.animMerged = new Set();
+        this.spawnRandom();
+        this.animNew.add(this.board.findIndex(v => v === 2));
+        this.spawnRandom();
+        const firstFour = this.board.findIndex((v,i) => v === 4 && i !== [...this.animNew][0]);
+        if(firstFour >= 0) this.animNew.add(firstFour);
+        this.updateBest();
+        this.render(true);
+    },
+     stop() { this.running = false; },
+    quit() { this.stop(); app.goHome(); },
+     emptyIndexes() { const out=[]; this.board.forEach((v,i)=>{if(!v)out.push(i)}); return out; },
+    spawnRandom() {
+        const empty=this.emptyIndexes();
+        if(!empty.length) return false;
+        const idx=empty[Math.floor(Math.random()*empty.length)];
+        this.board[idx]=Math.random()<0.9?2:4;
+        return true;
+    },
+    updateBest() {
+        if(this.score>this.best){ this.best=this.score; localStorage.setItem('twofoldBest',String(this.best)); }
+        const s=document.getElementById('twofold-score'); if(s)s.textContent=this.score;
+        const b=document.getElementById('twofold-best'); if(b)b.textContent=this.best;
+        const hb=document.getElementById('twofold-header-best'); if(hb)hb.textContent=this.best;
+    },
+     slideLine(line) {
+        const vals=line.filter(Boolean);
+        const merged=[];
+        for(let i=0;i<vals.length;i++){
+            if(vals[i]===vals[i+1]){ const v=vals[i]*2; merged.push(v); this.score+=v; i++; }
+            else merged.push(vals[i]);
+        }
+        while(merged.length<4) merged.push(0);
+        return merged;
+    },
+     move(dir) {
+        if(!this.running || this.gameOver) return;
+        const old=this.board.slice();
+        const scoreBefore=this.score;
+        const next=Array(16).fill(0);
+        const lines=[];
+        for(let i=0;i<4;i++){
+            let line=[];
+            for(let j=0;j<4;j++){
+                const idx = dir==='left' ? i*4+j : dir==='right' ? i*4+(3-j) : dir==='up' ? j*4+i : (3-j)*4+i;
+                line.push(this.board[idx]);
+            }
+            lines.push(this.slideLine(line));
+        }
+        for(let i=0;i<4;i++) for(let j=0;j<4;j++){
+            const lineVal=lines[i][j];
+            const idx = dir==='left' ? i*4+j : dir==='right' ? i*4+(3-j) : dir==='up' ? j*4+i : (3-j)*4+i;
+            next[idx]=lineVal;
+        }
+        const changed=next.some((v,i)=>v!==old[i]);
+        if(!changed) return;
+        this.board=next;
+        this.animNew = new Set();
+        for(let i=0;i<16;i++) if(old[i]===0 && next[i]!==0) this.animNew.add(i);
+        const gained = this.score > scoreBefore;
+        this.animMerged = new Set();
+        if(gained){
+            for(let i=0;i<16;i++) if(next[i]>=4 && next[i]!==old[i]) this.animMerged.add(i);
+        }
+        const beforeSpawn = this.board.slice();
+        const emptyBeforeSpawn = beforeSpawn.map((v,i)=>v===0?i:-1).filter(i=>i>=0);
+        this.spawnRandom();
+        const spawned = this.board.findIndex((v,i)=>beforeSpawn[i]===0 && v!==0);
+        if(spawned>=0) this.animNew.add(spawned);
+        this.updateBest();
+        this.render(true);
+        if(!this.won && this.board.some(v=>v>=2048)){
+            this.won=true;
+            this.running=false;
+            this.showOverlay(true);
+            return;
+        }
+        if(!this.canMove()){
+            this.gameOver=true;
+            this.running=false;
+            this.showOverlay(false);
+        }
+    },
+     canMove(){
+        if(this.board.some(v=>!v)) return true;
+        for(let r=0;r<4;r++) for(let c=0;c<4;c++){
+            const i=r*4+c;
+            if(c<3 && this.board[i]===this.board[i+1]) return true;
+            if(r<3 && this.board[i]===this.board[i+4]) return true;
+        }
+        return false;
+    },
+     tileClass(v){ if(v<=0)return ''; if(v<=2048)return 'twofold-v'+v; return 'twofold-vbig'; },
+    render(animate=false){
+        const board=document.getElementById('twofold-board'); if(!board)return;
+        board.innerHTML='';
+        this.board.forEach((v,i)=>{
+            const cell=document.createElement('div');
+            let cls='twofold-cell '+this.tileClass(v);
+            if(animate && this.animNew.has(i)) cls += ' new';
+            if(animate && this.animMerged.has(i)) cls += ' merged';
+            cell.className=cls;
+            cell.setAttribute('role','gridcell');
+            cell.setAttribute('aria-label',v?String(v):'empty');
+            if(v){ const span=document.createElement('span'); span.textContent=v; cell.appendChild(span); }
+            board.appendChild(cell);
+        });
+        if(animate){
+            setTimeout(()=>{ this.animNew.clear(); this.animMerged.clear(); }, 220);
+        }
+    },
+    showOverlay(won){
+        const ov=document.getElementById('twofold-overlay');
+        const title=document.getElementById('twofold-overlay-title');
+        const text=document.getElementById('twofold-overlay-text');
+        const cont=document.getElementById('twofold-continue');
+        const actions=document.getElementById('twofold-overlay-actions');
+        if(!ov)return;
+        ov.classList.add('active');
+        if(won){
+            title.textContent='You reached 2048!';
+            text.textContent='Nice! Keep playing to build an even bigger tile, or start a fresh board.';
+            cont.style.display='inline-flex';
+            actions.classList.remove('one');
+        }else{
+            title.textContent='No moves left';
+            text.textContent=`Final score: ${this.score}. Start a new game and try again.`;
+            cont.style.display='none';
+            actions.classList.add('one');
+        }
+    },
+    hideOverlay(){ document.getElementById('twofold-overlay')?.classList.remove('active'); }
+    };
 
     /* ================= GAME 1: FLASH CALCULATION ================= */
     const flashGame = {
@@ -2218,32 +2384,42 @@
             const board = document.getElementById('connect-board');
             board.innerHTML = '';
 
-            let coords = [];
-            let width = board.clientWidth || 340;
-            let height = board.clientHeight || 340;
-            let padding = 35;
+            const n = this.maxNumber;
+            const cols = n <= 15 ? 5 : n <= 30 ? 6 : 8;
+            const rows = Math.ceil(n / cols);
 
-            for (let i = 1; i <= this.maxNumber; i++) {
-                let x, y, overlap;
-                let attempts = 0;
-                do {
-                    overlap = false;
-                    x = Math.random() * (width - 2 * padding) + padding;
-                    y = Math.random() * (height - 2 * padding) + padding;
-                    for (let c of coords) {
-                        let dist = Math.hypot(c.x - x, c.y - y);
-                        if (dist < 42) { overlap = true; break; }
-                    }
-                    attempts++;
-                } while (overlap && attempts < 100);
+            const slots = [];
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (slots.length < n) slots.push({ r, c });
+                }
+            }
 
-                coords.push({ x, y, val: i });
+            // Shuffle positions so the numbers still feel random every round.
+            for (let i = slots.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [slots[i], slots[j]] = [slots[j], slots[i]];
+            }
+
+            const nodeSize = n >= 50 ? 34 : 36;
+            board.style.setProperty('--connect-node-size', `${nodeSize}px`);
+
+            for (let i = 1; i <= n; i++) {
+                const slot = slots[i - 1];
+                const cellW = 100 / cols;
+                const cellH = 100 / rows;
+                const jitterX = (Math.random() - 0.5) * Math.min(12, cellW * 0.16);
+                const jitterY = (Math.random() - 0.5) * Math.min(12, cellH * 0.12);
+
+                const x = (slot.c + 0.5) * cellW + jitterX;
+                const y = (slot.r + 0.5) * cellH + jitterY;
 
                 const node = document.createElement('div');
-                node.className = `connect-number-node`;
-                node.style.left = `${x}px`;
-                node.style.top = `${y}px`;
+                node.className = 'connect-number-node';
+                node.style.left = `${Math.max(5, Math.min(95, x))}%`;
+                node.style.top = `${Math.max(5, Math.min(95, y))}%`;
                 node.innerText = i;
+                node.setAttribute('aria-label', `Number ${i}`);
                 node.onclick = () => this.handleNodeClick(i, node);
                 board.appendChild(node);
             }
