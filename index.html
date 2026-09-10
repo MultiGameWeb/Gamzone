@@ -815,21 +815,28 @@
         .car-message.active { display:block; pointer-events:auto; }
         .car-message h2 { font-size:24px; color:var(--accent-cyan); margin-bottom:7px; }
         .car-message p { font-size:12px; color:var(--text-muted); line-height:1.45; margin-bottom:12px; }
-        .car-controls { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:9px; width:min(420px,100%); align-self:center; }
-        .car-control { min-height:48px; padding:10px; font-size:13px; touch-action:none; }
+        .car-controls { position:absolute; left:0; right:0; bottom:10px; z-index:10; display:flex; justify-content:space-between; align-items:flex-end; width:100%; padding:0 10px; pointer-events:none; }
+        .car-control-cluster { display:grid; grid-template-columns:repeat(2, minmax(64px, 78px)); gap:8px; pointer-events:auto; }
+        .car-control { min-width:64px; min-height:60px; padding:8px 7px; font-size:17px; touch-action:none; -webkit-tap-highlight-color:transparent; border-radius:12px; }
+        .car-control:active, .car-control.active { transform:translateY(2px); }
         .car-control.wide { grid-column:span 1; }
-        .car-ctrl-label { font-size:10px; opacity:.8; display:block; }
+        .car-ctrl-label { font-size:9px; font-weight:800; opacity:.88; display:block; letter-spacing:.3px; }
         .car-landscape-note { display:none; }
         .car-dest { color:#fbbf24 !important; }
         @media (max-width: 560px) {
-            .car-stage { min-height:390px; }
+            .car-stage { min-height:360px; max-height:calc(100dvh - 150px); }
             .car-hud { gap:5px; }
             .car-hud-item { padding:5px 7px; }
+            .car-controls { bottom:8px; padding:0 8px; }
+            .car-control { min-width:66px; min-height:58px; }
+            .car-control-cluster { grid-template-columns:repeat(2, minmax(62px, 72px)); gap:7px; }
         }
         @media (max-height: 520px) and (orientation:landscape) {
             .car-stage { min-height:250px; max-height:calc(100dvh - 118px); }
-            .car-controls { grid-template-columns:repeat(4,1fr); }
-            .car-controls .car-control:nth-child(4) { grid-column:auto; }
+            .car-stage { min-height:250px; }
+            .car-controls { bottom:6px; }
+            .car-control-cluster { grid-template-columns:repeat(2, minmax(58px, 68px)); gap:6px; }
+            .car-control { min-height:50px; }
             .car-landscape-note { display:block; text-align:center; font-size:10px; color:var(--text-muted); margin-top:5px; }
         }
     /* ================= GAME 9: TWOFOLD 2048 ================= */
@@ -986,6 +993,18 @@
             .twofold-cell { font-size: clamp(18px, 7vw, 30px); }
             .connect-number-node { font-size: 11px; }
         }
+
+        /* Final Twofold mobile sizing + interaction reliability */
+        .twofold-wrap { width:100%; max-width:390px; margin:0 auto; }
+        .twofold-board-shell { width:100%; max-width:390px; margin-inline:auto; }
+        .twofold-board { width:100%; max-width:374px; margin-inline:auto; }
+        .twofold-cell { min-width:0; min-height:0; }
+        @media (max-width:560px) {
+            .twofold-wrap { max-width:calc(100vw - 20px); }
+            .twofold-board-shell { max-width:calc(100vw - 20px); }
+            .twofold-board { max-width:calc(100vw - 36px); }
+            .twofold-cell { font-size:clamp(20px,7vw,32px); }
+        }
 </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
@@ -1030,7 +1049,7 @@
                     </div>
                     <span class="skill-tag">Mental Math</span>
                 </div>
-                <button class="btn-3d btn-play" onclick="app.openGame('flash')">PLAY</button>
+                <button class="btn-3d btn-play" onclick="window.brainApp.openGame('flash')">PLAY</button>
             </div>
 
             <!-- Game 2 -->
@@ -1043,7 +1062,7 @@
                     </div>
                     <span class="skill-tag">Reflex + Coord</span>
                 </div>
-                <button class="btn-3d btn-play" onclick="app.openGame('bricks')">PLAY</button>
+                <button class="btn-3d btn-play" onclick="window.brainApp.openGame('bricks')">PLAY</button>
             </div>
 
             <!-- Game 3 -->
@@ -1056,7 +1075,7 @@
                     </div>
                     <span class="skill-tag">Focus + Speed</span>
                 </div>
-                <button class="btn-3d btn-play" onclick="app.openGame('connect')">PLAY</button>
+                <button class="btn-3d btn-play" onclick="window.brainApp.openGame('connect')">PLAY</button>
             </div>
 
             <!-- Game 4 -->
@@ -1069,7 +1088,7 @@
                     </div>
                     <span class="skill-tag">Logic</span>
                 </div>
-                <button class="btn-3d btn-play" onclick="app.openGame('sudoku')">PLAY</button>
+                <button class="btn-3d btn-play" onclick="window.brainApp.openGame('sudoku')">PLAY</button>
             </div>
 
             <!-- Game 5 (NEW) -->
@@ -1082,7 +1101,7 @@
                     </div>
                     <span class="skill-tag">Focus + Inhibition</span>
                 </div>
-                <button class="btn-3d btn-play" onclick="app.openGame('stroop')">PLAY</button>
+                <button class="btn-3d btn-play" onclick="window.brainApp.openGame('stroop')">PLAY</button>
             </div>
 
             <!-- Game 6 (NEW) -->
@@ -1095,7 +1114,7 @@
                     </div>
                     <span class="skill-tag">Memory + Conc</span>
                 </div>
-                <button class="btn-3d btn-play" onclick="app.openGame('pattern')">PLAY</button>
+                <button class="btn-3d btn-play" onclick="window.brainApp.openGame('pattern')">PLAY</button>
             </div>
             <!-- Game 7 (NEW) -->
             <div class="game-card">
@@ -1107,7 +1126,7 @@
                     </div>
                     <span class="skill-tag">Reflex + Speed</span>
                 </div>
-                <button class="btn-3d btn-play" onclick="app.openGame('burrow')">PLAY</button>
+                <button class="btn-3d btn-play" onclick="window.brainApp.openGame('burrow')">PLAY</button>
             </div>
 
             <!-- Game 8 (NEW) -->
@@ -1120,7 +1139,7 @@
                     </div>
                     <span class="skill-tag">Driving + Reflex</span>
                 </div>
-                <button class="btn-3d btn-play" onclick="app.openGame('car')">PLAY</button>
+                <button class="btn-3d btn-play" onclick="window.brainApp.openGame('car')">PLAY</button>
             </div>
 
             <!-- Game 9 (NEW) -->
@@ -1133,7 +1152,7 @@
                     </div>
                     <span class="skill-tag">Strategy + Logic</span>
                 </div>
-                <button class="btn-3d btn-play" onclick="app.openGame('twofold')">PLAY</button>
+                <button class="btn-3d btn-play" onclick="window.brainApp.openGame('twofold')">PLAY</button>
             </div>
             <!-- Game 10 (NEW) -->
             <div class="game-card">
@@ -1145,7 +1164,7 @@
                     </div>
                     <span class="skill-tag">Reflex + Timing</span>
                 </div>
-                <button class="btn-3d btn-play" onclick="app.openGame('flappy')">PLAY</button>
+                <button class="btn-3d btn-play" onclick="window.brainApp.openGame('flappy')">PLAY</button>
             </div>
 
         </div>
@@ -1173,7 +1192,7 @@
     <!-- ================= GAME 1: FLASH CALCULATION SCREEN ================= -->
     <div id="screen-flash" class="screen">
         <div class="game-header">
-            <button class="btn-3d btn-home" onclick="app.goHome()">← Home</button>
+            <button class="btn-3d btn-home" onclick="window.brainApp.goHome()">← Home</button>
             <div class="game-title-bar">⚡ Flash Calculation</div>
             <div class="hud-stats">Score: <span id="flash-score">0</span></div>
         </div>
@@ -1213,7 +1232,7 @@
     <!-- ================= GAME 2: BALL & BRICKS SCREEN ================= -->
     <div id="screen-bricks" class="screen">
         <div class="game-header">
-            <button class="btn-3d btn-home" onclick="bricksGame.quit()">← Home</button>
+            <button class="btn-3d btn-home" onclick="window.brainApp.goHome()">← Home</button>
             <div class="game-title-bar">🏀 Ball & Bricks</div>
             <div class="hud-stats">Lvl <span id="bricks-level">1</span> | Score <span id="bricks-score">0</span></div>
         </div>
@@ -1239,7 +1258,7 @@
     <!-- ================= GAME 3: CONNECT NUMBERS SCREEN ================= -->
     <div id="screen-connect" class="screen">
         <div class="game-header">
-            <button class="btn-3d btn-home" onclick="app.goHome()">← Home</button>
+            <button class="btn-3d btn-home" onclick="window.brainApp.goHome()">← Home</button>
             <div class="game-title-bar">🔢 Connect Numbers</div>
             <div class="hud-stats">Current: <span id="connect-target" style="color:var(--accent-cyan);">1</span></div>
         </div>
@@ -1268,7 +1287,7 @@
     <!-- ================= GAME 4: SUDOKU SCREEN ================= -->
     <div id="screen-sudoku" class="screen">
         <div class="game-header">
-            <button class="btn-3d btn-home" onclick="app.goHome()">← Home</button>
+            <button class="btn-3d btn-home" onclick="window.brainApp.goHome()">← Home</button>
             <div class="game-title-bar">🧩 Sudoku 9×9</div>
             <div class="hud-stats">Errors: <span id="sudoku-mistakes" style="color:var(--danger);">0</span></div>
         </div>
@@ -1314,7 +1333,7 @@
     <!-- ================= GAME 5: STROOP COLOR CHALLENGE SCREEN (NEW) ================= -->
     <div id="screen-stroop" class="screen">
         <div class="game-header">
-            <button class="btn-3d btn-home" onclick="app.goHome()">← Home</button>
+            <button class="btn-3d btn-home" onclick="window.brainApp.goHome()">← Home</button>
             <div class="game-title-bar">🎨 Stroop Challenge</div>
             <div class="hud-stats">Score: <span id="stroop-score">0</span></div>
         </div>
@@ -1350,7 +1369,7 @@
     <!-- ================= GAME 6: PATTERN RECALL SCREEN (NEW) ================= -->
     <div id="screen-pattern" class="screen">
         <div class="game-header">
-            <button class="btn-3d btn-home" onclick="app.goHome()">← Home</button>
+            <button class="btn-3d btn-home" onclick="window.brainApp.goHome()">← Home</button>
             <div class="game-title-bar">🔀 Pattern Recall</div>
             <div class="hud-stats">Lvl <span id="pattern-level">1</span> | Score <span id="pattern-score">0</span></div>
         </div>
@@ -1379,7 +1398,7 @@
 <!-- ================= GAME 7: BURROW BASH SCREEN ================= -->
 <div id="screen-burrow" class="screen burrow-screen">
   <div class="game-header">
-    <button class="btn-3d btn-home" onclick="burrowGame.quit()">← Home</button>
+    <button class="btn-3d btn-home" onclick="window.brainApp.goHome()">← Home</button>
     <div class="game-title-bar">🦫 Burrow Bash</div>
     <div class="hud-stats">Score: <span id="burrow-header-score">0</span></div>
   </div>
@@ -1404,7 +1423,7 @@
     <!-- ================= GAME 8: HIGHWAY RUSH SCREEN ================= -->
     <div id="screen-car" class="screen car-screen">
         <div class="game-header">
-            <button class="btn-3d btn-home" onclick="carGame.quit()">← Home</button>
+            <button class="btn-3d btn-home" onclick="window.brainApp.goHome()">← Home</button>
             <div class="game-title-bar">🏎️ Highway Rush</div>
             <div class="hud-stats">Lives: <span id="car-lives">❤️❤️❤️</span></div>
         </div>
@@ -1431,11 +1450,15 @@
                     </div>
                 </div>
             </div>
-            <div class="car-controls">
-                <button class="btn-3d car-control" data-car-control="left">◀<span class="car-ctrl-label">STEER</span></button>
-                <button class="btn-3d teal car-control" data-car-control="accelerate">▲<span class="car-ctrl-label">ACCELERATE</span></button>
-                <button class="btn-3d amber car-control" data-car-control="brake">▼<span class="car-ctrl-label">BRAKE</span></button>
-                <button class="btn-3d car-control" data-car-control="right">▶<span class="car-ctrl-label">STEER</span></button>
+            <div class="car-controls" aria-label="Highway Rush touch controls">
+                <div class="car-control-cluster car-control-left">
+                    <button class="btn-3d car-control" data-car-control="left" aria-label="Steer left">◀<span class="car-ctrl-label">LEFT</span></button>
+                    <button class="btn-3d amber car-control" data-car-control="brake" aria-label="Brake">▼<span class="car-ctrl-label">BRAKE</span></button>
+                </div>
+                <div class="car-control-cluster car-control-right">
+                    <button class="btn-3d teal car-control" data-car-control="accelerate" aria-label="Accelerate">▲<span class="car-ctrl-label">GO</span></button>
+                    <button class="btn-3d car-control" data-car-control="right" aria-label="Steer right">▶<span class="car-ctrl-label">RIGHT</span></button>
+                </div>
             </div>
             <div class="car-landscape-note">Best on mobile landscape • touch controls are active</div>
         </div>
@@ -1444,7 +1467,7 @@
     <!-- ================= GAME 9: TWOFOLD 2048 SCREEN ================= -->
     <div id="screen-twofold" class="screen twofold-screen">
         <div class="game-header">
-            <button class="btn-3d btn-home" onclick="twofoldGame.quit()">← Home</button>
+            <button class="btn-3d btn-home" onclick="window.brainApp.goHome()">← Home</button>
             <div class="game-title-bar">🔢 Twofold</div>
             <div class="hud-stats">Best <span id="twofold-header-best">0</span></div>
         </div>
@@ -1481,7 +1504,7 @@
     <!-- ================= GAME 10: SKYBOUND FLUTTER SCREEN ================= -->
     <div id="screen-flappy" class="screen flappy-screen">
         <div class="game-header">
-            <button class="btn-3d btn-home" onclick="flappyGame.quit()">← Home</button>
+            <button class="btn-3d btn-home" onclick="window.brainApp.goHome()">← Home</button>
             <div class="game-title-bar">🐦 Skybound Flutter</div>
             <div class="hud-stats">Best <span id="flappy-header-best">0</span></div>
         </div>
@@ -1624,7 +1647,10 @@
 
             if (gameName === 'burrow') burrowGame.prepare();
             if (gameName === 'car') carGame.prepare();
-            if (gameName === 'twofold') twofoldGame.prepare();
+            if (gameName === 'twofold') {
+                twofoldGame.prepare();
+                requestAnimationFrame(() => twofoldGame.render(false));
+            }
             if (gameName === 'flappy') flappyGame.prepare();
 
             if (gameName === 'flash') {
@@ -1692,6 +1718,8 @@
             this.goHome();
         }
     };
+    // Expose core app/game objects explicitly for mobile/PWA inline handlers.
+    window.brainApp = app;
 
 
     const twofoldGame = {
@@ -1733,6 +1761,20 @@
             else this.move(dy > 0 ? 'down' : 'up');
             e.preventDefault();
         }, {passive:false});
+        board.addEventListener('pointerdown', (e) => {
+            if (!this.running || e.pointerType === 'mouse') return;
+            this.touchStartX = e.clientX;
+            this.touchStartY = e.clientY;
+            try { board.setPointerCapture(e.pointerId); } catch (_) {}
+        });
+        board.addEventListener('pointerup', (e) => {
+            if (!this.running || e.pointerType === 'mouse') return;
+            const dx = e.clientX - this.touchStartX;
+            const dy = e.clientY - this.touchStartY;
+            if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+            if (Math.abs(dx) > Math.abs(dy)) this.move(dx > 0 ? 'right' : 'left');
+            else this.move(dy > 0 ? 'down' : 'up');
+        });
         newBtn?.addEventListener('click', () => this.newGame());
         overlayNew?.addEventListener('click', () => this.newGame());
         cont?.addEventListener('click', () => { this.won = true; this.hideOverlay(); this.running = !this.gameOver; });
@@ -1755,11 +1797,10 @@
         this.hideOverlay();
         this.animNew = new Set();
         this.animMerged = new Set();
-        this.spawnRandom();
-        this.animNew.add(this.board.findIndex(v => v === 2));
-        this.spawnRandom();
-        const firstFour = this.board.findIndex((v,i) => v === 4 && i !== [...this.animNew][0]);
-        if(firstFour >= 0) this.animNew.add(firstFour);
+        const firstIndex = this.spawnRandom();
+        const secondIndex = this.spawnRandom();
+        if (firstIndex >= 0) this.animNew.add(firstIndex);
+        if (secondIndex >= 0) this.animNew.add(secondIndex);
         this.updateBest();
         this.render(true);
     },
@@ -1768,10 +1809,10 @@
      emptyIndexes() { const out=[]; this.board.forEach((v,i)=>{if(!v)out.push(i)}); return out; },
     spawnRandom() {
         const empty=this.emptyIndexes();
-        if(!empty.length) return false;
+        if(!empty.length) return -1;
         const idx=empty[Math.floor(Math.random()*empty.length)];
         this.board[idx]=Math.random()<0.9?2:4;
-        return true;
+        return idx;
     },
     updateBest() {
         if(this.score>this.best){ this.best=this.score; localStorage.setItem('twofoldBest',String(this.best)); }
@@ -1887,6 +1928,7 @@
     },
     hideOverlay(){ document.getElementById('twofold-overlay')?.classList.remove('active'); }
     };
+    window.twofoldGame = twofoldGame;
 
     /* ================= GAME 1: FLASH CALCULATION ================= */
     const flashGame = {
@@ -3310,6 +3352,7 @@
             app.goHome();
         }
     };
+    window.carGame = carGame;
 
 
     /* ================= GAME 7: BURROW BASH ================= */
